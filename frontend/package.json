@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "schema": "cargo run --quiet --manifest-path=../Cargo.toml --bin modsim-schema > schema.graphql",
+    "schema": "node scripts/gen-schema.js",
     "generate": "npm run schema && gql.tada generate-output",
     "dev": "npm run generate && vite",
     "build": "npm run generate && tsc -b && vite build",
