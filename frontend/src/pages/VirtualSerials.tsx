@@ -92,6 +92,35 @@ export function VirtualSerialsPage({
           </tbody>
         </table>
       </div>
+      <div className="panel">
+        <h3>Windows users</h3>
+        <p className="muted">
+          Windows has no userspace equivalent to <code>openpty(3)</code>, so this simulator cannot
+          create virtual serial ports on Windows directly. Use{" "}
+          <a href="https://com0com.sourceforge.net/" target="_blank" rel="noreferrer">
+            com0com
+          </a>{" "}
+          (open source, signed kernel driver) to create a pair of linked virtual COM ports.
+        </p>
+        <ol className="muted">
+          <li>
+            Download and install com0com from{" "}
+            <a href="https://com0com.sourceforge.net/" target="_blank" rel="noreferrer">
+              com0com.sourceforge.net
+            </a>{" "}
+            (requires administrator rights).
+          </li>
+          <li>
+            Open the <code>Setup Command Prompt</code> shipped with com0com and run{" "}
+            <code>install PortName=COM10 PortName=COM11</code> to create the pair{" "}
+            <code>COM10</code> ↔ <code>COM11</code>.
+          </li>
+          <li>
+            Configure this simulator's RTU transport to use one side (e.g. <code>COM10</code>) and
+            point your client application at the other side (<code>COM11</code>).
+          </li>
+        </ol>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { TransportPage } from "./pages/Transport";
 import { VirtualSerialsPage } from "./pages/VirtualSerials";
 import { TrafficPage } from "./pages/Traffic";
 import { ContextsPage } from "./pages/Contexts";
+import { ConverterPage } from "./pages/Converter";
 
 export type WorldSnapshot = Awaited<ReturnType<typeof fetchWorld>>;
 
@@ -24,7 +25,8 @@ type Tab =
   | "contexts"
   | "transport"
   | "virtual-serials"
-  | "traffic";
+  | "traffic"
+  | "converter";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "devices", label: "Devices" },
@@ -33,6 +35,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "transport", label: "Transport" },
   { id: "virtual-serials", label: "Virtual Serials" },
   { id: "traffic", label: "Traffic" },
+  { id: "converter", label: "Converter" },
 ];
 
 export function App() {
@@ -89,6 +92,8 @@ export function App() {
         return <VirtualSerialsPage world={world} onRefresh={refresh} />;
       case "traffic":
         return <TrafficPage />;
+      case "converter":
+        return <ConverterPage />;
     }
   }, [tab, world, refresh]);
 

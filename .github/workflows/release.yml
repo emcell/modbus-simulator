@@ -12,14 +12,27 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # -- Linux --------------------------------------------------------
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             artifact: modsim-linux-x86_64
             binary: modsim
+            needs_musl: true
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+            artifact: modsim-linux-aarch64
+            binary: modsim
+            needs_musl: true
+          # -- Windows ------------------------------------------------------
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: modsim-windows-x86_64
             binary: modsim.exe
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            artifact: modsim-windows-aarch64
+            binary: modsim.exe
+          # -- macOS --------------------------------------------------------
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact: modsim-macos-aarch64
@@ -28,22 +41,29 @@ jobs:
             target: x86_64-apple-darwin
             artifact: modsim-macos-x86_64
             binary: modsim
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
       - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
 
       - name: Install musl tools (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.needs_musl
         run: sudo apt-get update && sudo apt-get install -y musl-tools
 
-      # Build the frontend first so rust-embed picks it up.
+      # Build the frontend once — rust-embed bakes it into every target's
+      # binary at cargo compile time.
       - name: Build frontend
         working-directory: frontend
         run: |
@@ -53,18 +73,26 @@ jobs:
       - name: Build release binary
         run: cargo build --release --bin modsim --target ${{ matrix.target }}
 
-      - name: Package
+      - name: Package (unix)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           mkdir -p pkg
           cp target/${{ matrix.target }}/release/${{ matrix.binary }} pkg/
-          cp README.md LICENSE* pkg/ 2>/dev/null || true
+          cp README.md pkg/ 2>/dev/null || true
+          cp LICENSE* pkg/ 2>/dev/null || true
           cd pkg
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            7z a ../${{ matrix.artifact }}.zip *
-          else
-            tar czf ../${{ matrix.artifact }}.tar.gz *
-          fi
+          tar czf ../${{ matrix.artifact }}.tar.gz *
+
+      - name: Package (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path pkg | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/${{ matrix.binary }}" pkg/
+          if (Test-Path README.md) { Copy-Item README.md pkg/ }
+          Get-ChildItem -Path . -Filter "LICENSE*" | ForEach-Object { Copy-Item $_.FullName pkg/ }
+          Compress-Archive -Path pkg/* -DestinationPath "${{ matrix.artifact }}.zip"
 
       - uses: actions/upload-artifact@v4
         with:
