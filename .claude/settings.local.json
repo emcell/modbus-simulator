@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo --version)",
+      "Bash(rustc --version)",
+      "Bash(cargo check *)",
+      "Bash(cargo test *)",
+      "Bash(cargo tree *)",
+      "Bash(cargo clippy *)",
+      "Bash(cargo fmt *)",
+      "Bash(cargo build *)",
+      "Bash(mbpoll --help)",
+      "Bash(mbpoll -h)"
+    ]
+  }
+}
