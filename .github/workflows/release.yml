@@ -32,15 +32,10 @@ jobs:
             target: aarch64-pc-windows-msvc
             artifact: modsim-windows-aarch64
             binary: modsim.exe
-          # -- macOS --------------------------------------------------------
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            artifact: modsim-macos-aarch64
-            binary: modsim
-          - os: macos-13
-            target: x86_64-apple-darwin
-            artifact: modsim-macos-x86_64
-            binary: modsim
+          # macOS is intentionally omitted — GitHub's darwin runner queue
+          # regularly blocks the matrix for a long time and devs can build
+          # macOS binaries locally via `cargo build --release` since that's
+          # where development happens anyway.
 
     runs-on: ${{ matrix.os }}
     steps:
