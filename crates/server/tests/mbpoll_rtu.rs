@@ -24,7 +24,7 @@ use modsim_core::model::{
 };
 use modsim_server::persistence::{AppSettings, Store};
 use modsim_server::state::AppState;
-use modsim_server::transport::rtu;
+use modsim_server::transport::{ptystream::PtyStream, rtu};
 use tokio::time::sleep;
 
 const SLAVE_ID: u8 = 7;
@@ -294,117 +294,17 @@ async fn start_simulator(bridge_path: PathBuf) -> Arc<AppState> {
 }
 
 /// Open a PTY path as a nonblocking async stream that can be used with
-/// `AsyncRead + AsyncWrite`. Sets termios to raw mode so binary data
-/// isn't mangled.
-fn open_pty_async(path: &std::path::Path) -> std::io::Result<pty_async::PtyStream> {
-    use std::os::fd::{AsRawFd, BorrowedFd, OwnedFd};
+/// `AsyncRead + AsyncWrite`. Delegates to the production `PtyStream`
+/// module which also sets termios to raw mode.
+fn open_pty_async(path: &std::path::Path) -> std::io::Result<PtyStream> {
+    use std::os::fd::OwnedFd;
     let file = std::fs::OpenOptions::new()
         .read(true)
         .write(true)
         .custom_flags(libc::O_NONBLOCK)
         .open(path)?;
-    // Set raw mode.
-    {
-        let raw = file.as_raw_fd();
-        let borrow = unsafe { BorrowedFd::borrow_raw(raw) };
-        if let Ok(mut t) = nix::sys::termios::tcgetattr(borrow) {
-            nix::sys::termios::cfmakeraw(&mut t);
-            let _ = nix::sys::termios::tcsetattr(borrow, nix::sys::termios::SetArg::TCSANOW, &t);
-        }
-    }
     let owned: OwnedFd = file.into();
-    pty_async::PtyStream::new(owned)
-}
-
-mod pty_async {
-    use std::io;
-    use std::os::fd::{AsRawFd, OwnedFd};
-    use std::pin::Pin;
-    use std::task::{Context, Poll};
-
-    use tokio::io::unix::AsyncFd;
-    use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
-
-    pub struct PtyStream {
-        inner: AsyncFd<OwnedFd>,
-    }
-
-    impl PtyStream {
-        pub fn new(fd: OwnedFd) -> io::Result<Self> {
-            Ok(Self {
-                inner: AsyncFd::new(fd)?,
-            })
-        }
-    }
-
-    impl AsyncRead for PtyStream {
-        fn poll_read(
-            self: Pin<&mut Self>,
-            cx: &mut Context<'_>,
-            buf: &mut ReadBuf<'_>,
-        ) -> Poll<io::Result<()>> {
-            loop {
-                let mut guard = match self.inner.poll_read_ready(cx) {
-                    Poll::Ready(Ok(g)) => g,
-                    Poll::Ready(Err(e)) => return Poll::Ready(Err(e)),
-                    Poll::Pending => return Poll::Pending,
-                };
-                let fd = guard.get_inner().as_raw_fd();
-                let n = unsafe {
-                    libc::read(
-                        fd,
-                        buf.initialize_unfilled().as_mut_ptr().cast(),
-                        buf.remaining(),
-                    )
-                };
-                if n < 0 {
-                    let e = io::Error::last_os_error();
-                    if e.kind() == io::ErrorKind::WouldBlock {
-                        guard.clear_ready();
-                        continue;
-                    }
-                    return Poll::Ready(Err(e));
-                }
-                let n = n as usize;
-                buf.advance(n);
-                return Poll::Ready(Ok(()));
-            }
-        }
-    }
-
-    impl AsyncWrite for PtyStream {
-        fn poll_write(
-            self: Pin<&mut Self>,
-            cx: &mut Context<'_>,
-            buf: &[u8],
-        ) -> Poll<io::Result<usize>> {
-            loop {
-                let mut guard = match self.inner.poll_write_ready(cx) {
-                    Poll::Ready(Ok(g)) => g,
-                    Poll::Ready(Err(e)) => return Poll::Ready(Err(e)),
-                    Poll::Pending => return Poll::Pending,
-                };
-                let fd = guard.get_inner().as_raw_fd();
-                let n = unsafe { libc::write(fd, buf.as_ptr().cast(), buf.len()) };
-                if n < 0 {
-                    let e = io::Error::last_os_error();
-                    if e.kind() == io::ErrorKind::WouldBlock {
-                        guard.clear_ready();
-                        continue;
-                    }
-                    return Poll::Ready(Err(e));
-                }
-                return Poll::Ready(Ok(n as usize));
-            }
-        }
-
-        fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-            Poll::Ready(Ok(()))
-        }
-        fn poll_shutdown(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-            Poll::Ready(Ok(()))
-        }
-    }
+    PtyStream::new(owned)
 }
 
 /// Runs `mbpoll -m rtu` against a device path with a consistent base

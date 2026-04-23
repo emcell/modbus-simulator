@@ -14,13 +14,27 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::time::sleep;
 use tracing::{debug, info, warn};
 
-use crate::state::{AppState, TrafficFrame, WorldEvent};
+use crate::state::{AppState, DecodedValue, TrafficFrame, WorldEvent};
 use crate::transport::pdu::{build_exception, build_response, parse_request};
+use crate::transport::semantics;
+use modsim_core::engine::{ModbusRequest, ModbusResponse};
 
 pub async fn run(state: Arc<AppState>, bind: String, port: u16) -> Result<()> {
+    let listener = bind_listener(&bind, port).await?;
+    serve_listener(state, listener).await
+}
+
+/// Bind a TCP listener without starting the accept loop. Used by the
+/// transport supervisor so synchronous bind errors (port in use, etc.)
+/// can be surfaced to the UI before we commit to spawning the serve
+/// task.
+pub async fn bind_listener(bind: &str, port: u16) -> Result<TcpListener> {
     let addr = format!("{bind}:{port}");
-    let listener = TcpListener::bind(&addr).await?;
-    info!("modbus TCP listening on {addr}");
+    Ok(TcpListener::bind(&addr).await?)
+}
+
+pub async fn serve_listener(state: Arc<AppState>, listener: TcpListener) -> Result<()> {
+    info!("modbus TCP listening on {}", listener.local_addr()?);
     loop {
         let (sock, peer) = listener.accept().await?;
         let st = state.clone();
@@ -48,26 +62,11 @@ async fn handle_client(state: Arc<AppState>, mut sock: TcpStream) -> Result<()> 
         let mut pdu = vec![0u8; pdu_len];
         sock.read_exact(&mut pdu).await?;
 
-        emit_traffic(
-            &state,
-            "in",
-            unit_id,
-            pdu.first().copied().unwrap_or(0),
-            &pdu,
-        );
-
-        let reply = match dispatch(&state, unit_id, &pdu).await {
-            Dispatched::Silence => continue,
-            Dispatched::Reply(bytes) => bytes,
+        let out = dispatch_full(&state, "tcp", unit_id, &pdu).await;
+        let reply = match out {
+            DispatchOut::Silence => continue,
+            DispatchOut::Reply(bytes) => bytes,
         };
-
-        emit_traffic(
-            &state,
-            "out",
-            unit_id,
-            reply.first().copied().unwrap_or(0),
-            &reply,
-        );
 
         let len = (reply.len() + 1) as u16;
         let mut frame = Vec::with_capacity(7 + reply.len());
@@ -80,26 +79,45 @@ async fn handle_client(state: Arc<AppState>, mut sock: TcpStream) -> Result<()> 
     }
 }
 
-enum Dispatched {
+pub(crate) enum DispatchOut {
     Silence,
     Reply(Vec<u8>),
 }
 
-async fn dispatch(state: &Arc<AppState>, slave_id: u8, pdu: &[u8]) -> Dispatched {
+/// Parse the PDU, drive the engine, emit in+out traffic events with
+/// semantic annotations, track per-device activity. Shared between TCP and
+/// RTU so both transports produce identical traffic metadata.
+pub(crate) async fn dispatch_full(
+    state: &Arc<AppState>,
+    transport: &'static str,
+    slave_id: u8,
+    pdu: &[u8],
+) -> DispatchOut {
     let fc = pdu.first().copied().unwrap_or(0);
     let Some((device, device_type)) = state.resolve_slave(slave_id) else {
-        // Unknown slave id: silent (matches common RTU-bus-like behavior).
-        return Dispatched::Silence;
+        return DispatchOut::Silence;
     };
     let req = match parse_request(pdu) {
         Ok(r) => r,
         Err(_) => {
-            return Dispatched::Reply(build_exception(
-                fc,
-                modsim_core::ModbusException::IllegalFunction,
-            ));
+            let reply = build_exception(fc, modsim_core::ModbusException::IllegalFunction);
+            emit_in(state, transport, slave_id, fc, pdu, None, &device_type);
+            emit_out_exception(state, transport, slave_id, &reply);
+            return DispatchOut::Reply(reply);
         }
     };
+
+    // Emit the "in" event with semantic summary.
+    emit_in(
+        state,
+        transport,
+        slave_id,
+        fc,
+        pdu,
+        Some(&req),
+        &device_type,
+    );
+
     let behavior = effective_behavior(&device_type.behavior, device.behavior_overrides.as_ref());
     let out = process_request(&req, &device, &device_type, &behavior);
 
@@ -107,15 +125,38 @@ async fn dispatch(state: &Arc<AppState>, slave_id: u8, pdu: &[u8]) -> Dispatched
         sleep(Duration::from_millis(u64::from(behavior.response_delay_ms))).await;
     }
 
-    // Apply any writes back to device state.
     if !out.state_update.writes.is_empty() {
         apply_writes(state, &device, &device_type, &out.state_update);
     }
 
+    // Activity tracking: remember when the simulator last handled a read
+    // or a write for this device AND each individual register in range.
+    let now = now_ms();
+    let touched = semantics::affected_registers(&req, &device_type);
+    if is_write_request(&req) {
+        state.mark_device_write(device.id, now);
+        for rid in &touched {
+            state.mark_register_write(device.id, *rid, now);
+        }
+    } else {
+        state.mark_device_read(device.id, now);
+        for rid in &touched {
+            state.mark_register_read(device.id, *rid, now);
+        }
+    }
+
     match out.outcome {
-        Outcome::Response(r) => Dispatched::Reply(build_response(&r)),
-        Outcome::Exception(ex) => Dispatched::Reply(build_exception(fc, ex)),
-        Outcome::Silence => Dispatched::Silence,
+        Outcome::Response(r) => {
+            let reply = build_response(&r);
+            emit_out_response(state, transport, slave_id, &reply, &req, &r, &device_type);
+            DispatchOut::Reply(reply)
+        }
+        Outcome::Exception(ex) => {
+            let reply = build_exception(fc, ex);
+            emit_out_exception(state, transport, slave_id, &reply);
+            DispatchOut::Reply(reply)
+        }
+        Outcome::Silence => DispatchOut::Silence,
     }
 }
 
@@ -139,28 +180,116 @@ fn apply_writes(
     state.notify(WorldEvent::WorldChanged);
 }
 
-fn emit_traffic(
-    state: &Arc<AppState>,
-    direction: &'static str,
-    slave_id: u8,
-    fc: u8,
-    bytes: &[u8],
-) {
-    let hex = bytes
+fn now_ms() -> u128 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or_default()
+}
+
+fn is_write_request(req: &ModbusRequest) -> bool {
+    matches!(
+        req,
+        ModbusRequest::WriteSingleCoil { .. }
+            | ModbusRequest::WriteSingleRegister { .. }
+            | ModbusRequest::WriteMultipleCoils { .. }
+            | ModbusRequest::WriteMultipleRegisters { .. }
+    )
+}
+
+fn hex_of(bytes: &[u8]) -> String {
+    bytes
         .iter()
         .map(|b| format!("{b:02X}"))
         .collect::<Vec<_>>()
-        .join(" ");
-    let ts = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis())
-        .unwrap_or_default();
+        .join(" ")
+}
+
+fn decoded_to_state(ds: Vec<semantics::DecodedValue>) -> Vec<DecodedValue> {
+    ds.into_iter()
+        .map(|d| DecodedValue {
+            register_name: d.register_name,
+            address: d.address,
+            data_type: d.data_type,
+            value: d.value,
+        })
+        .collect()
+}
+
+fn emit_in(
+    state: &Arc<AppState>,
+    transport: &'static str,
+    slave_id: u8,
+    fc: u8,
+    bytes: &[u8],
+    req: Option<&ModbusRequest>,
+    device_type: &modsim_core::model::DeviceType,
+) {
+    let (summary, decoded) = match req {
+        Some(r) => {
+            let s = semantics::summarize_request(r);
+            // For writes we can decode the values being pushed.
+            let d = if is_write_request(r) {
+                decoded_to_state(semantics::decode_write_request(r, device_type))
+            } else {
+                Vec::new()
+            };
+            (s, d)
+        }
+        None => ("(unparseable request)".into(), Vec::new()),
+    };
     state.notify(WorldEvent::TrafficFrame(TrafficFrame {
-        direction,
-        transport: "tcp",
+        direction: "in",
+        transport,
         slave_id,
         function_code: fc,
-        bytes_hex: hex,
-        timestamp_ms: ts,
+        bytes_hex: hex_of(bytes),
+        timestamp_ms: now_ms(),
+        summary,
+        decoded,
+    }));
+}
+
+fn emit_out_response(
+    state: &Arc<AppState>,
+    transport: &'static str,
+    slave_id: u8,
+    reply_bytes: &[u8],
+    req: &ModbusRequest,
+    resp: &ModbusResponse,
+    device_type: &modsim_core::model::DeviceType,
+) {
+    let summary = semantics::summarize_response(req, resp);
+    let decoded = decoded_to_state(semantics::decode_read(req, resp, device_type));
+    let fc = reply_bytes.first().copied().unwrap_or(0);
+    state.notify(WorldEvent::TrafficFrame(TrafficFrame {
+        direction: "out",
+        transport,
+        slave_id,
+        function_code: fc,
+        bytes_hex: hex_of(reply_bytes),
+        timestamp_ms: now_ms(),
+        summary,
+        decoded,
+    }));
+}
+
+fn emit_out_exception(
+    state: &Arc<AppState>,
+    transport: &'static str,
+    slave_id: u8,
+    reply_bytes: &[u8],
+) {
+    let fc = reply_bytes.first().copied().unwrap_or(0);
+    let ex_code = reply_bytes.get(1).copied().unwrap_or(0);
+    state.notify(WorldEvent::TrafficFrame(TrafficFrame {
+        direction: "out",
+        transport,
+        slave_id,
+        function_code: fc,
+        bytes_hex: hex_of(reply_bytes),
+        timestamp_ms: now_ms(),
+        summary: format!("Exception 0x{ex_code:02X}"),
+        decoded: Vec::new(),
     }));
 }

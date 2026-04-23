@@ -29,6 +29,9 @@ pub struct VirtualPty {
     pub symlink_path: Option<PathBuf>,
     /// Underlying slave device path, e.g. `/dev/ttys003`.
     pub slave_path: PathBuf,
+    /// True while the master fd is currently owned by an RTU transport
+    /// task. Reflects usage in the UI.
+    pub in_use: bool,
 }
 
 #[derive(Default)]
@@ -38,8 +41,9 @@ pub struct PtyRegistry {
 
 struct PtyEntry {
     info: VirtualPty,
+    /// `None` once the fd has been handed to an RTU transport loop.
     #[cfg(unix)]
-    _master_fd: std::os::fd::OwnedFd,
+    master_fd: Option<std::os::fd::OwnedFd>,
 }
 
 impl PtyRegistry {
@@ -49,6 +53,14 @@ impl PtyRegistry {
 
     pub fn list(&self) -> Vec<VirtualPty> {
         self.inner.lock().iter().map(|e| e.info.clone()).collect()
+    }
+
+    pub fn get(&self, id: &str) -> Option<VirtualPty> {
+        self.inner
+            .lock()
+            .iter()
+            .find(|e| e.info.id == id)
+            .map(|e| e.info.clone())
     }
 
     pub fn remove(&self, id: &str) -> bool {
@@ -63,8 +75,29 @@ impl PtyRegistry {
         false
     }
 
+    /// Create a PTY and assign it a caller-chosen id. Used on startup to
+    /// rehydrate persisted virtual-serial entries so their ids remain
+    /// stable across restarts.
+    #[cfg(unix)]
+    pub fn create_with_id(
+        &self,
+        id: String,
+        symlink: Option<PathBuf>,
+    ) -> anyhow::Result<VirtualPty> {
+        self.create_internal(Some(id), symlink)
+    }
+
     #[cfg(unix)]
     pub fn create(&self, symlink: Option<PathBuf>) -> anyhow::Result<VirtualPty> {
+        self.create_internal(None, symlink)
+    }
+
+    #[cfg(unix)]
+    fn create_internal(
+        &self,
+        id: Option<String>,
+        symlink: Option<PathBuf>,
+    ) -> anyhow::Result<VirtualPty> {
         use std::os::fd::AsRawFd;
 
         // openpty fills master + slave fds. We own the master; the slave is
@@ -87,26 +120,57 @@ impl PtyRegistry {
         drop(slave_fd);
 
         if let Some(link) = &symlink {
-            if link.exists() {
-                let _ = std::fs::remove_file(link);
+            // `Path::exists()` follows symlinks — it returns `false` for a
+            // symlink whose target is gone, which would cause us to skip
+            // the removal and then `symlink(2)` would fail with EEXIST.
+            // Use `symlink_metadata` so dangling symlinks (typical leftover
+            // from a previous simulator run) get cleaned up correctly.
+            if link.symlink_metadata().is_ok() {
+                std::fs::remove_file(link).map_err(|e| {
+                    anyhow::anyhow!("failed to remove stale symlink {}: {e}", link.display())
+                })?;
             }
             std::os::unix::fs::symlink(&slave_path, link)?;
         }
 
         let info = VirtualPty {
-            id: uuid::Uuid::new_v4().to_string(),
+            id: id.unwrap_or_else(|| uuid::Uuid::new_v4().to_string()),
             symlink_path: symlink,
             slave_path,
+            in_use: false,
         };
         self.inner.lock().push(PtyEntry {
             info: info.clone(),
-            _master_fd: master_fd,
+            master_fd: Some(master_fd),
         });
         Ok(info)
     }
 
+    /// Hand the master fd to a caller (typically the RTU transport loop).
+    /// Marks the entry as `in_use`; returns `None` if the id is unknown or
+    /// the fd has already been taken.
+    #[cfg(unix)]
+    pub fn take_master(&self, id: &str) -> Option<std::os::fd::OwnedFd> {
+        let mut g = self.inner.lock();
+        let entry = g.iter_mut().find(|e| e.info.id == id)?;
+        let fd = entry.master_fd.take()?;
+        entry.info.in_use = true;
+        Some(fd)
+    }
+
     #[cfg(not(unix))]
     pub fn create(&self, _symlink: Option<PathBuf>) -> anyhow::Result<VirtualPty> {
+        Err(anyhow::anyhow!(
+            "virtual PTYs are not supported on this platform"
+        ))
+    }
+
+    #[cfg(not(unix))]
+    pub fn create_with_id(
+        &self,
+        _id: String,
+        _symlink: Option<PathBuf>,
+    ) -> anyhow::Result<VirtualPty> {
         Err(anyhow::anyhow!(
             "virtual PTYs are not supported on this platform"
         ))

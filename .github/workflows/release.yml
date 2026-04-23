@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            artifact: modsim-linux-x86_64
+            binary: modsim
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: modsim-windows-x86_64
+            binary: modsim.exe
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: modsim-macos-aarch64
+            binary: modsim
+          - os: macos-13
+            target: x86_64-apple-darwin
+            artifact: modsim-macos-x86_64
+            binary: modsim
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install musl tools (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      # Build the frontend first so rust-embed picks it up.
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build release binary
+        run: cargo build --release --bin modsim --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p pkg
+          cp target/${{ matrix.target }}/release/${{ matrix.binary }} pkg/
+          cp README.md LICENSE* pkg/ 2>/dev/null || true
+          cd pkg
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a ../${{ matrix.artifact }}.zip *
+          else
+            tar czf ../${{ matrix.artifact }}.tar.gz *
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}.tar.gz
+            ${{ matrix.artifact }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true

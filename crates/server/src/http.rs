@@ -3,18 +3,18 @@
 use std::sync::Arc;
 
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use axum::extract::State;
 use axum::http::{header, StatusCode, Uri};
 use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::Router;
-use rust_embed::RustEmbed;
+use rust_embed::Embed;
 
 use crate::graphql::ApiSchema;
 use crate::state::AppState;
 
-#[derive(RustEmbed)]
+#[derive(Embed)]
 #[folder = "$CARGO_MANIFEST_DIR/../../frontend/dist/"]
 #[include = "*"]
 struct Assets;
@@ -23,6 +23,7 @@ pub fn router(state: Arc<AppState>, schema: ApiSchema) -> Router {
     Router::new()
         .route("/health", get(|| async { "ok" }))
         .route("/graphql", post(graphql_handler))
+        .route_service("/graphql/ws", GraphQLSubscription::new(schema.clone()))
         .route("/playground", get(playground))
         .fallback(static_handler)
         .with_state(HttpState { app: state, schema })

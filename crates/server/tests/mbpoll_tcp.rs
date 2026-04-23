@@ -1,3 +1,5 @@
+#![allow(clippy::await_holding_lock)] // intentional: tcp_lock serializes each async test
+
 //! End-to-end TCP tests driven by the `mbpoll` CLI.
 //!
 //! Covers every function code the simulator implements (FC 01–06, 15, 16)
@@ -254,6 +256,16 @@ async fn start_server() -> u16 {
     port
 }
 
+/// Tests in this file each spin up their own AppState + TCP listener on an
+/// ephemeral port. Between picking the port and binding it inside
+/// `tcp::run`, another parallel test can steal it — which surfaces as
+/// sporadic "Connection refused" from mbpoll. Serialize to remove that
+/// race.
+fn tcp_lock() -> std::sync::MutexGuard<'static, ()> {
+    static M: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    M.lock().unwrap_or_else(|e| e.into_inner())
+}
+
 /// Runs `mbpoll -m tcp -p PORT -a 1 -0 -1 -o 2 <opts> 127.0.0.1 <values...>`.
 ///
 /// mbpoll's CLI requires the host to appear *before* any positional write
@@ -308,6 +320,7 @@ fn assert_slot(stdout: &str, idx: u32, value: &str) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc01_read_coils() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -326,6 +339,7 @@ async fn fc01_read_coils() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc02_read_discrete_inputs() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -344,6 +358,7 @@ async fn fc02_read_discrete_inputs() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc03_read_holding_registers() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -361,6 +376,7 @@ async fn fc03_read_holding_registers() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc04_read_input_registers() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -381,6 +397,7 @@ async fn fc04_read_input_registers() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc05_write_single_coil_then_read() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -401,6 +418,7 @@ async fn fc05_write_single_coil_then_read() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc06_write_single_register_then_read() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -420,6 +438,7 @@ async fn fc06_write_single_register_then_read() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc15_write_multiple_coils_then_read() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -447,6 +466,7 @@ async fn fc15_write_multiple_coils_then_read() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn fc16_write_multiple_registers_then_read() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -482,6 +502,7 @@ async fn fc16_write_multiple_registers_then_read() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn u32_big_endian_with_mbpoll_dash_big() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -497,6 +518,7 @@ async fn u32_big_endian_with_mbpoll_dash_big() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn u32_big_endian_word_swap_with_mbpoll_default() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -517,6 +539,7 @@ async fn u32_big_endian_word_swap_with_mbpoll_default() {
 /// read the two raw registers and reconstruct 0x11223344 ourselves.
 #[tokio::test(flavor = "multi_thread")]
 async fn u32_little_endian_raw_words_match_spec() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -535,6 +558,7 @@ async fn u32_little_endian_raw_words_match_spec() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn u32_little_endian_word_swap_raw_words_match_spec() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -553,6 +577,7 @@ async fn u32_little_endian_word_swap_raw_words_match_spec() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn u64_big_endian_raw_words_match_spec() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -571,6 +596,7 @@ async fn u64_big_endian_raw_words_match_spec() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn i64_negative_big_endian_raw_words_match_spec() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -591,6 +617,7 @@ async fn i64_negative_big_endian_raw_words_match_spec() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn i32_negative_big_endian() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -606,6 +633,7 @@ async fn i32_negative_big_endian() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn f32_big_endian() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -623,6 +651,7 @@ async fn f32_big_endian() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn string_read_round_trip_raw_words() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -655,6 +684,7 @@ async fn string_read_round_trip_raw_words() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn u16_write_and_read_roundtrip_matches_engine() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }
@@ -685,6 +715,7 @@ async fn u16_write_and_read_roundtrip_matches_engine() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn missing_address_reports_exception() {
+    let _g = tcp_lock();
     if !have_mbpoll() {
         return;
     }

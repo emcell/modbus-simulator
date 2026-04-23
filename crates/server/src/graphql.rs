@@ -35,6 +35,14 @@ pub fn build_schema(state: Arc<AppState>) -> ApiSchema {
 pub struct SubscriptionRoot;
 
 #[derive(SimpleObject, Clone)]
+pub struct DecodedField {
+    pub register_name: String,
+    pub address: i32,
+    pub data_type: String,
+    pub value: String,
+}
+
+#[derive(SimpleObject, Clone)]
 pub struct TrafficEvent {
     pub direction: String,
     pub transport: String,
@@ -42,6 +50,8 @@ pub struct TrafficEvent {
     pub function_code: i32,
     pub bytes_hex: String,
     pub timestamp_ms: String,
+    pub summary: String,
+    pub decoded: Vec<DecodedField>,
 }
 
 #[Subscription]
@@ -59,6 +69,17 @@ impl SubscriptionRoot {
                     function_code: f.function_code.into(),
                     bytes_hex: f.bytes_hex,
                     timestamp_ms: f.timestamp_ms.to_string(),
+                    summary: f.summary,
+                    decoded: f
+                        .decoded
+                        .into_iter()
+                        .map(|d| DecodedField {
+                            register_name: d.register_name,
+                            address: d.address.into(),
+                            data_type: d.data_type,
+                            value: d.value,
+                        })
+                        .collect(),
                 }),
                 crate::state::WorldEvent::WorldChanged => None,
             }
@@ -356,6 +377,13 @@ pub struct RegisterValueEntry {
 }
 
 #[derive(SimpleObject, Clone)]
+pub struct RegisterActivityEntry {
+    pub register_id: ID,
+    pub last_read_at_ms: Option<String>,
+    pub last_write_at_ms: Option<String>,
+}
+
+#[derive(SimpleObject, Clone)]
 pub struct Device {
     pub id: ID,
     pub name: String,
@@ -364,11 +392,28 @@ pub struct Device {
     pub has_behavior_overrides: bool,
     pub register_values: Vec<RegisterValueEntry>,
     pub effective_behavior: Behavior,
+    /// Epoch ms of the last read handled for this device, or null.
+    pub last_read_at_ms: Option<String>,
+    /// Epoch ms of the last write handled for this device, or null.
+    pub last_write_at_ms: Option<String>,
+    /// Per-register read/write timestamps (only registers that have seen
+    /// at least one access appear here).
+    pub register_activity: Vec<RegisterActivityEntry>,
 }
 
-fn device_to_gql(dev: &CoreDevice, dt: &CoreDeviceType) -> Device {
+fn device_to_gql(dev: &CoreDevice, dt: &CoreDeviceType, state: &AppState) -> Device {
     let eff =
         modsim_core::behavior::effective_behavior(&dt.behavior, dev.behavior_overrides.as_ref());
+    let activity = state.device_activity(dev.id);
+    let register_activity = state
+        .register_activity_for_device(dev.id)
+        .into_iter()
+        .map(|(rid, a)| RegisterActivityEntry {
+            register_id: ID(rid.to_string()),
+            last_read_at_ms: a.last_read_at_ms.map(|n| n.to_string()),
+            last_write_at_ms: a.last_write_at_ms.map(|n| n.to_string()),
+        })
+        .collect();
     Device {
         id: ID(dev.id.to_string()),
         name: dev.name.clone(),
@@ -384,6 +429,9 @@ fn device_to_gql(dev: &CoreDevice, dt: &CoreDeviceType) -> Device {
             })
             .collect(),
         effective_behavior: eff.into(),
+        last_read_at_ms: activity.last_read_at_ms.map(|n| n.to_string()),
+        last_write_at_ms: activity.last_write_at_ms.map(|n| n.to_string()),
+        register_activity,
     }
 }
 
@@ -402,6 +450,7 @@ pub struct RtuTransport {
     pub parity: String,
     pub data_bits: i32,
     pub stop_bits: i32,
+    pub virtual_serial_id: Option<ID>,
 }
 
 #[derive(SimpleObject, Clone)]
@@ -414,11 +463,55 @@ pub struct SimContext {
     pub rtu: RtuTransport,
 }
 
+#[derive(Enum, Copy, Clone, Eq, PartialEq)]
+pub enum TransportState {
+    Disabled,
+    Running,
+    Error,
+}
+
+#[derive(SimpleObject, Clone)]
+pub struct TransportStatusView {
+    pub state: TransportState,
+    pub description: String,
+    pub error: Option<String>,
+}
+
+#[derive(SimpleObject, Clone)]
+pub struct TransportStatus {
+    pub tcp: TransportStatusView,
+    pub rtu: TransportStatusView,
+}
+
+fn state_to_view(s: &crate::supervisor::TransportState) -> TransportStatusView {
+    match s {
+        crate::supervisor::TransportState::Disabled => TransportStatusView {
+            state: TransportState::Disabled,
+            description: String::new(),
+            error: None,
+        },
+        crate::supervisor::TransportState::Running { description } => TransportStatusView {
+            state: TransportState::Running,
+            description: description.clone(),
+            error: None,
+        },
+        crate::supervisor::TransportState::Error {
+            description,
+            message,
+        } => TransportStatusView {
+            state: TransportState::Error,
+            description: description.clone(),
+            error: Some(message.clone()),
+        },
+    }
+}
+
 #[derive(SimpleObject, Clone)]
 pub struct VirtualSerial {
     pub id: ID,
     pub slave_path: String,
     pub symlink_path: Option<String>,
+    pub in_use: bool,
 }
 
 // ---- input objects ---------------------------------------------------------
@@ -542,7 +635,7 @@ impl Query {
             .iter()
             .filter_map(|d| {
                 w.device_type(d.device_type_id)
-                    .map(|dt| device_to_gql(d, dt))
+                    .map(|dt| device_to_gql(d, dt, state))
             })
             .collect()
     }
@@ -553,7 +646,7 @@ impl Query {
         let active = w.active_context_id;
         w.contexts
             .iter()
-            .map(|c| context_to_gql(c, active == Some(c.id), &w.device_types))
+            .map(|c| context_to_gql(c, active == Some(c.id), &w.device_types, state))
             .collect()
     }
 
@@ -561,7 +654,16 @@ impl Query {
         let state = ctx.data_unchecked::<Arc<AppState>>();
         let w = state.world.read();
         let c = w.active_context()?;
-        Some(context_to_gql(c, true, &w.device_types))
+        Some(context_to_gql(c, true, &w.device_types, state))
+    }
+
+    async fn transport_status(&self, ctx: &Context<'_>) -> TransportStatus {
+        let state = ctx.data_unchecked::<Arc<AppState>>();
+        let snap = state.supervisor.snapshot();
+        TransportStatus {
+            tcp: state_to_view(&snap.tcp),
+            rtu: state_to_view(&snap.rtu),
+        }
     }
 
     async fn virtual_serials(&self, ctx: &Context<'_>) -> Vec<VirtualSerial> {
@@ -574,12 +676,18 @@ impl Query {
                 id: ID(v.id),
                 slave_path: v.slave_path.display().to_string(),
                 symlink_path: v.symlink_path.map(|p| p.display().to_string()),
+                in_use: v.in_use,
             })
             .collect()
     }
 }
 
-fn context_to_gql(c: &CoreContext, active: bool, types: &[CoreDeviceType]) -> SimContext {
+fn context_to_gql(
+    c: &CoreContext,
+    active: bool,
+    types: &[CoreDeviceType],
+    state: &AppState,
+) -> SimContext {
     let devices = c
         .devices
         .iter()
@@ -587,7 +695,7 @@ fn context_to_gql(c: &CoreContext, active: bool, types: &[CoreDeviceType]) -> Si
             types
                 .iter()
                 .find(|t| t.id == d.device_type_id)
-                .map(|dt| device_to_gql(d, dt))
+                .map(|dt| device_to_gql(d, dt, state))
         })
         .collect();
     SimContext {
@@ -607,6 +715,7 @@ fn context_to_gql(c: &CoreContext, active: bool, types: &[CoreDeviceType]) -> Si
             parity: c.transport.rtu.parity.clone(),
             data_bits: c.transport.rtu.data_bits.into(),
             stop_bits: c.transport.rtu.stop_bits.into(),
+            virtual_serial_id: c.transport.rtu.virtual_serial_id.clone().map(ID),
         },
     }
 }
@@ -634,6 +743,31 @@ impl Mutation {
         };
         state.world.write().device_types.push(dt.clone());
         state.save_device_type(id)?;
+        state.notify(crate::state::WorldEvent::WorldChanged);
+        Ok(device_type_to_gql(&dt))
+    }
+
+    async fn export_device_type(&self, ctx: &Context<'_>, id: ID) -> Result<String> {
+        let state = ctx.data_unchecked::<Arc<AppState>>();
+        let tid = DeviceTypeId::from_str(&id.0)?;
+        let w = state.world.read();
+        let dt = w.device_type(tid).ok_or("device type not found")?;
+        Ok(serde_json::to_string_pretty(dt)?)
+    }
+
+    async fn import_device_type(&self, ctx: &Context<'_>, data: String) -> Result<DeviceType> {
+        let state = ctx.data_unchecked::<Arc<AppState>>();
+        let mut dt: CoreDeviceType = serde_json::from_str(&data)
+            .map_err(|e| async_graphql::Error::new(format!("invalid device type JSON: {e}")))?;
+        // Fresh ids so a re-import onto the same machine doesn't collide
+        // with the source type (or with previous imports).
+        dt.id = DeviceTypeId::new();
+        for r in &mut dt.registers {
+            r.id = RegisterId::new();
+        }
+        let new_id = dt.id;
+        state.world.write().device_types.push(dt.clone());
+        state.save_device_type(new_id)?;
         state.notify(crate::state::WorldEvent::WorldChanged);
         Ok(device_type_to_gql(&dt))
     }
@@ -811,7 +945,7 @@ impl Mutation {
         }
         state.save_context(ctx_id)?;
         state.notify(crate::state::WorldEvent::WorldChanged);
-        Ok(device_to_gql(&dev, &dt))
+        Ok(device_to_gql(&dev, &dt, state))
     }
 
     async fn delete_device(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
@@ -925,7 +1059,7 @@ impl Mutation {
         state.notify(crate::state::WorldEvent::WorldChanged);
         let active = state.world.read().active_context_id == Some(c.id);
         let types = state.world.read().device_types.clone();
-        Ok(context_to_gql(&c, active, &types))
+        Ok(context_to_gql(&c, active, &types, state))
     }
 
     async fn switch_context(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
@@ -939,6 +1073,7 @@ impl Mutation {
             w.active_context_id = Some(cid);
         }
         state.save_active()?;
+        state.reconfigure_transports().await;
         state.notify(crate::state::WorldEvent::WorldChanged);
         Ok(true)
     }
@@ -958,6 +1093,7 @@ impl Mutation {
         if removed {
             state.store.delete_context(cid)?;
             state.save_active()?;
+            state.reconfigure_transports().await;
             state.notify(crate::state::WorldEvent::WorldChanged);
         }
         Ok(removed)
@@ -987,6 +1123,7 @@ impl Mutation {
         if let Some(cid) = ctx_id {
             state.save_context(cid)?;
         }
+        state.reconfigure_transports().await;
         state.notify(crate::state::WorldEvent::WorldChanged);
         Ok(true)
     }
@@ -1000,6 +1137,7 @@ impl Mutation {
         parity: String,
         data_bits: i32,
         stop_bits: i32,
+        virtual_serial_id: Option<ID>,
     ) -> Result<bool> {
         let state = ctx.data_unchecked::<Arc<AppState>>();
         let ctx_id;
@@ -1016,11 +1154,13 @@ impl Mutation {
                 parity,
                 data_bits: data_bits.clamp(5, 8) as u8,
                 stop_bits: stop_bits.clamp(1, 2) as u8,
+                virtual_serial_id: virtual_serial_id.map(|id| id.0),
             };
         }
         if let Some(cid) = ctx_id {
             state.save_context(cid)?;
         }
+        state.reconfigure_transports().await;
         state.notify(crate::state::WorldEvent::WorldChanged);
         Ok(true)
     }
@@ -1035,16 +1175,22 @@ impl Mutation {
             .ptys
             .create(symlink_path.map(std::path::PathBuf::from))
             .map_err(|e| async_graphql::Error::new(e.to_string()))?;
+        state.save_virtual_serials()?;
         Ok(VirtualSerial {
             id: ID(info.id),
             slave_path: info.slave_path.display().to_string(),
             symlink_path: info.symlink_path.map(|p| p.display().to_string()),
+            in_use: info.in_use,
         })
     }
 
     async fn remove_virtual_serial(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
         let state = ctx.data_unchecked::<Arc<AppState>>();
-        Ok(state.ptys.remove(&id.0))
+        let removed = state.ptys.remove(&id.0);
+        if removed {
+            state.save_virtual_serials()?;
+        }
+        Ok(removed)
     }
 
     async fn export_context(&self, ctx: &Context<'_>, id: ID) -> Result<String> {
@@ -1085,6 +1231,6 @@ impl Mutation {
         state.save_world_full()?;
         state.notify(crate::state::WorldEvent::WorldChanged);
         let types_snapshot = state.world.read().device_types.clone();
-        Ok(context_to_gql(&c, false, &types_snapshot))
+        Ok(context_to_gql(&c, false, &types_snapshot, state))
     }
 }

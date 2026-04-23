@@ -211,6 +211,31 @@ Import/Export: Ein exportierter Kontext enthält die benötigten Gerätetypen ei
 
 `<config-dir>` folgt plattformkonvention (XDG unter Linux, `%APPDATA%` unter Windows).
 
+## Bauen & Entwickeln
+
+```sh
+# Backend-Build (rein Rust)
+cargo build --release --bin modsim
+
+# Frontend-Build (React + gql.tada) — erzeugt dist/ → wird vom
+# nächsten release-Build ins Binary eingebettet.
+cd frontend
+npm install
+npm run build
+
+# Alles zusammen
+cd .. && cargo build --release
+
+# Frontend-Dev-Server mit Live-Reload gegen lokales Backend
+# (Backend separat mit `cargo run --bin modsim` starten)
+cd frontend && npm run dev
+
+# Tests
+cargo test --workspace
+# Auch ausgeführt: mbpoll-TCP/RTU-Integrationstests (automatisch übersprungen,
+# falls mbpoll / socat nicht installiert sind).
+```
+
 ## Nicht-Ziele (explizit)
 
 - Kein Modbus-Master-Mode

@@ -144,6 +144,11 @@ pub struct RtuTransport {
     pub parity: String,
     pub data_bits: u8,
     pub stop_bits: u8,
+    /// When set, the RTU loop takes ownership of the corresponding virtual
+    /// serial's master fd instead of opening `device` via the serial-port
+    /// driver. Bypasses termios-ioctl limitations on PTYs.
+    #[serde(default)]
+    pub virtual_serial_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+schema.graphql
+src/graphql-env.d.ts

@@ -1,0 +1,30 @@
+{
+  "name": "modbus-simulator-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "schema": "cargo run --quiet --manifest-path=../Cargo.toml --bin modsim-schema > schema.graphql",
+    "generate": "npm run schema && gql.tada generate-output",
+    "dev": "npm run generate && vite",
+    "build": "npm run generate && tsc -b && vite build",
+    "check": "tsc -b",
+    "preview": "vite preview",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "graphql": "^16.10.0",
+    "gql.tada": "^1.8.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.14",
+    "@types/react-dom": "^18.3.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

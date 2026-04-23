@@ -9,15 +9,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::Result;
-use modsim_core::engine::{apply_state_update, process_request, Outcome};
-use modsim_core::{effective_behavior, Device, DeviceType};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::time::{sleep, timeout};
 use tokio_serial::{DataBits, Parity, SerialPortBuilderExt, SerialStream, StopBits};
 use tracing::{debug, info, warn};
 
-use crate::state::{AppState, TrafficFrame, WorldEvent};
-use crate::transport::pdu::{build_exception, build_response, parse_request};
+use crate::state::AppState;
+use crate::transport::tcp::{dispatch_full, DispatchOut};
 
 /// Compute Modbus CRC16 (poly 0xA001, init 0xFFFF, reflected).
 #[must_use]
@@ -47,9 +45,16 @@ pub struct SerialConfig<'a> {
 }
 
 pub async fn run(state: Arc<AppState>, cfg: SerialConfig<'_>) -> Result<()> {
-    let port = open_port(cfg)?;
+    let port = open_serial(cfg)?;
     info!("modbus RTU listening on {}", cfg.device);
     serve(state, port).await
+}
+
+/// Open the serial device without entering the serve loop. Exposed so
+/// the transport supervisor can surface sync open failures (device not
+/// found, permission denied, …) to the UI before committing to spawn.
+pub fn open_serial(cfg: SerialConfig<'_>) -> Result<SerialStream> {
+    open_port(cfg)
 }
 
 /// Run the RTU serve loop on an arbitrary async stream. Useful for tests
@@ -135,25 +140,10 @@ where
         let pdu = buf[1..buf.len() - 2].to_vec();
         buf.clear();
 
-        emit_traffic(
-            &state,
-            "in",
-            slave_id,
-            pdu.first().copied().unwrap_or(0),
-            &pdu,
-        );
-
-        let Some(reply_pdu) = dispatch(&state, slave_id, &pdu).await else {
-            continue; // silence
+        let reply_pdu = match dispatch_full(&state, "rtu", slave_id, &pdu).await {
+            DispatchOut::Silence => continue,
+            DispatchOut::Reply(bytes) => bytes,
         };
-
-        emit_traffic(
-            &state,
-            "out",
-            slave_id,
-            reply_pdu.first().copied().unwrap_or(0),
-            &reply_pdu,
-        );
 
         // Broadcast address 0: no response.
         if slave_id == 0 {
@@ -169,79 +159,6 @@ where
             return Ok(());
         }
     }
-}
-
-async fn dispatch(state: &Arc<AppState>, slave_id: u8, pdu: &[u8]) -> Option<Vec<u8>> {
-    let fc = pdu.first().copied().unwrap_or(0);
-    let (device, device_type) = state.resolve_slave(slave_id)?;
-    let req = match parse_request(pdu) {
-        Ok(r) => r,
-        Err(_) => {
-            return Some(build_exception(
-                fc,
-                modsim_core::ModbusException::IllegalFunction,
-            ))
-        }
-    };
-    let behavior = effective_behavior(&device_type.behavior, device.behavior_overrides.as_ref());
-    let out = process_request(&req, &device, &device_type, &behavior);
-    if behavior.response_delay_ms > 0 {
-        sleep(Duration::from_millis(u64::from(behavior.response_delay_ms))).await;
-    }
-    if !out.state_update.writes.is_empty() {
-        apply_writes(state, &device, &device_type, &out.state_update);
-    }
-    match out.outcome {
-        Outcome::Response(r) => Some(build_response(&r)),
-        Outcome::Exception(ex) => Some(build_exception(fc, ex)),
-        Outcome::Silence => None,
-    }
-}
-
-fn apply_writes(
-    state: &Arc<AppState>,
-    device: &Device,
-    device_type: &DeviceType,
-    update: &modsim_core::StateUpdate,
-) {
-    let mut snapshot = device.clone();
-    apply_state_update(&mut snapshot, device_type, update);
-    let dev_id = device.id;
-    state.apply_device_update(|ctx| {
-        if let Some(d) = ctx.devices.iter_mut().find(|d| d.id == dev_id) {
-            d.register_values = snapshot.register_values.clone();
-        }
-    });
-    if let Some(cid) = state.world.read().active_context_id {
-        let _ = state.save_context(cid);
-    }
-    state.notify(WorldEvent::WorldChanged);
-}
-
-fn emit_traffic(
-    state: &Arc<AppState>,
-    direction: &'static str,
-    slave_id: u8,
-    fc: u8,
-    bytes: &[u8],
-) {
-    let hex = bytes
-        .iter()
-        .map(|b| format!("{b:02X}"))
-        .collect::<Vec<_>>()
-        .join(" ");
-    let ts = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis())
-        .unwrap_or_default();
-    state.notify(WorldEvent::TrafficFrame(TrafficFrame {
-        direction,
-        transport: "rtu",
-        slave_id,
-        function_code: fc,
-        bytes_hex: hex,
-        timestamp_ms: ts,
-    }));
 }
 
 /// Build a full RTU request frame [slave_id | pdu | crc_lo crc_hi].
@@ -268,21 +185,10 @@ pub async fn process_frame(state: &Arc<AppState>, frame: &[u8]) -> Option<Vec<u8
     }
     let slave_id = frame[0];
     let pdu = &frame[1..frame.len() - 2];
-    emit_traffic(
-        state,
-        "in",
-        slave_id,
-        pdu.first().copied().unwrap_or(0),
-        pdu,
-    );
-    let reply_pdu = dispatch(state, slave_id, pdu).await?;
-    emit_traffic(
-        state,
-        "out",
-        slave_id,
-        reply_pdu.first().copied().unwrap_or(0),
-        &reply_pdu,
-    );
+    let reply_pdu = match dispatch_full(state, "rtu", slave_id, pdu).await {
+        DispatchOut::Reply(b) => b,
+        DispatchOut::Silence => return None,
+    };
     if slave_id == 0 {
         return None;
     }

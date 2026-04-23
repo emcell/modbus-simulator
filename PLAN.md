@@ -118,6 +118,17 @@ Inkrementelle Umsetzung in Meilensteinen. Jeder Meilenstein ist lauffähig, test
 - **Tests**: Unit-Tests im Core, Integration-Tests für Transport-Layer, E2E gegen GraphQL
 - **Logs**: `tracing` strukturiert; Traffic-Log pro Frame für UI-Subscription
 
+## Status
+
+Alle Meilensteine M0–M8 umgesetzt:
+
+- Rust-Workspace (`modsim-core` pure + `modsim-server` I/O)
+- Modbus TCP + RTU inkl. virtueller PTYs (Linux/macOS)
+- Vollständige GraphQL-API mit Queries / Mutations / Subscriptions (`traffic`, `worldChanged`)
+- React + TS + gql.tada Frontend, als Vite-Bundle ins Binary eingebettet
+- GitHub-Actions: CI (fmt/clippy/test über Linux/macOS/Windows + Frontend-Build) + Release-Workflow mit Matrix-Build
+- **71 Tests grün**: 19 core + 9 server unit + 4 TCP-Integration + 4 RTU-Dispatch + 19 mbpoll-TCP (alle FCs + Encodings) + 16 mbpoll-RTU
+
 ## Offene Fragen für später
 
 - Scripted Verhalten (z. B. Wert ändert sich zyklisch, Rampen, Rauschen) als späteres Feature?

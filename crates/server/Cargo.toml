@@ -12,6 +12,10 @@ workspace = true
 name = "modsim"
 path = "src/main.rs"
 
+[[bin]]
+name = "modsim-schema"
+path = "src/bin/schema.rs"
+
 [dependencies]
 modsim-core = { path = "../core" }
 tokio = { version = "1", features = ["full"] }
@@ -42,3 +46,6 @@ libc = "0.2"
 [dev-dependencies]
 tokio-test = "0.4"
 uuid = { version = "1", features = ["v4"] }
+tokio-tungstenite = "0.29"
+futures-util = "0.3"
+reqwest = { version = "0.12", features = ["json"] }

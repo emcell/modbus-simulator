@@ -5,6 +5,11 @@
 //!   - `active.json`
 //!   - `device-types/<uuid>.json`
 //!   - `contexts/<uuid>.json`
+//!   - `virtual-serials.json` — persisted list of PTY intents (id + symlink).
+//!     PTY master fds can't survive a restart, but we re-create a fresh
+//!     PTY pair on startup for each intent, keeping the id and symlink
+//!     stable so RTU transport config references (and the user's test app
+//!     which opened the symlink) stay valid.
 
 use std::fs;
 use std::io::Write;
@@ -52,6 +57,10 @@ pub struct Store {
 
 impl Store {
     pub fn new_default() -> Result<Self> {
+        // Explicit override (useful for tests and ad-hoc runs with isolated state).
+        if let Ok(override_path) = std::env::var("MODSIM_CONFIG_DIR") {
+            return Self::with_root(PathBuf::from(override_path));
+        }
         let dirs = ProjectDirs::from("dev", "emcell", "modbus-simulator")
             .context("unable to determine config dir")?;
         let root = dirs.config_dir().to_path_buf();
@@ -160,6 +169,34 @@ impl Store {
             &serde_json::to_vec_pretty(&ActiveFile { context_id: id })?,
         )
     }
+
+    fn virtual_serials_path(&self) -> PathBuf {
+        self.root.join("virtual-serials.json")
+    }
+
+    pub fn load_virtual_serials(&self) -> Result<Vec<VirtualSerialIntent>> {
+        let p = self.virtual_serials_path();
+        if !p.exists() {
+            return Ok(Vec::new());
+        }
+        let s = fs::read_to_string(&p)?;
+        Ok(serde_json::from_str(&s).unwrap_or_default())
+    }
+
+    pub fn save_virtual_serials(&self, intents: &[VirtualSerialIntent]) -> Result<()> {
+        atomic_write(
+            &self.virtual_serials_path(),
+            &serde_json::to_vec_pretty(intents)?,
+        )
+    }
+}
+
+/// Persistent description of a virtual serial port. The `id` is re-used
+/// verbatim after a restart so RTU configs referencing it keep working.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VirtualSerialIntent {
+    pub id: String,
+    pub symlink_path: Option<PathBuf>,
 }
 
 fn atomic_write(path: &Path, bytes: &[u8]) -> Result<()> {
