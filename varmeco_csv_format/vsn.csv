@@ -1,0 +1,120 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultValue;DefaultExtModbusIndex
+SYS.Time.Hour;0;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Systemzeit-Stunde;uint16_t;;1;1;;ALL;0;
+SYS.Time.Minute;1;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Systemzeit-Minute;uint16_t;;1;1;;ALL;0;
+SYS.Time.DayOfWeek;2;holding-register;READ_ONLY;0;6;Systemzeit-Wochentag;uint16_t;;1;1;;ALL;0;
+SYS.Date.Year;3;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;99;Systemdatum-Jahr;uint16_t;;1;1;;ALL;21;
+SYS.Date.Month;4;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;12;Systemdatum-Monat;uint16_t;;1;1;;ALL;1;
+SYS.Date.Day;5;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;31;Systemdatum-Tag;uint16_t;;1;1;;ALL;1;
+SYS.DaylightSavingSwitch;6;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Autom.Sommer-/Winterzeitumschaltung;uint16_t;;1;1;;SERVICE1;1;
+SYS.Function.A06;7;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Funktion-A06;uint16_t;;1;1;;SERVICE1;1;
+SYS.AntiBlock.Switch;8;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Anti-Blockier-Funktion - Schalter;uint16_t;;1;1;;ALL;1;
+SYS.AntiBlock.Hour;9;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Anti-Blockier-Funktion - Uhrzeit-Stunde;uint16_t;;1;1;;ALL;2;
+SYS.Config.Modbus.SlaveId;10;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;128;SYS-Konf. Modbus-Slaveadresse;uint16_t;;1;1;###;SERVICE1;1;
+SYS.Config.Modbus2.Id;11;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;128;SYS-Konf. Modbus2-Adresse;uint16_t;;1;1;###;SERVICE1;0;
+SYS.Config.Language;12;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;SYS-Konf. Sprache;uint16_t;;1;1;#;SERVICE1;0;
+SYS.Config.FactoryDefaults;13;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;123;123;SYS-Konf. Reset auf Werkseinstellung;uint16_t;;1;1;###;ADMIN;0;
+SOL.Actor.Modus.Coll.Pump.Supply;20;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Kollektorpumpe-Versorgung (A01);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Hz.Pump.Supply;21;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Heizungspumpe-Versorgung (A02);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Hz.Valve.Supply;22;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Heizungsventil-Schaltphase (A03);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Hz.SwitchValve.Supply;23;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - VL-Umschaltventil-Schaltphase (A04);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.A05;24;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus (A05);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Fault;25;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Stoermeldung (A06);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Coll.Pump.Signal;26;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Kollektorpumpe-Signal (A07);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Modus.Hz.Pump.Signal;27;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;Modus - Heizungspumpe-Signal (A08);uint16_t;;1;1;;ALL;2;
+SOL.Actor.Ratio.Coll.Pump.Signal;28;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;Leistung - Kollektorpumpe (A07);uint16_t;%;1;1;### %;ALL;0;
+SOL.Actor.Ratio.Hz.Pump.Signal;29;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;Leistung - Heizungspumpe (A08);uint16_t;%;1;1;### %;ALL;0;
+SOL.Coll.TempDiff.Pump.On;30;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;20;400;Temp.differenz Kollektor-zu-SPNT fuer Koll.pumpe ein;uint16_t;K;1;10;####,# K;ALL;80;
+SOL.Coll.TempDiff.Pump.Off;31;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;390;Temp.differenz Kollektor-zu-SPNT fuer Koll.pumpe aus;uint16_t;K;1;10;####,# K;ALL;50;
+SOL.Coll.RotControl.Min.Power;32;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;100;KollektorPumpe Minimal-Arbeitspunkt - Leistung;uint16_t;%;1;1;### %;ALL;40;
+SOL.Coll.RotControl.Min.TempDiff;33;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;490;KollektorPumpe Minimal-Arbeitspunkt - Temp.diff zu Referenz;uint16_t;K;1;10;####,# K;ALL;60;
+SOL.Coll.RotControl.Max.Power;34;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;100;KollektorPumpe Maximal-Arbeitspunkt - Leistung;uint16_t;%;1;1;### %;ALL;100;
+SOL.Coll.RotControl.Max.TempDiff;35;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;500;KollektorPumpe Maximal-Arbeitspunkt - Temp.diff zu Referenz;uint16_t;K;1;10;####,# K;ALL;100;
+SOL.Hz.RotControl.Min.Power;36;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;100;HeizungsPumpe Minimal-Arbeitspunkt - Leistung;uint16_t;%;1;1;### %;ALL;40;
+SOL.Hz.RotControl.Min.TempDiff;37;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;490;HeizungsPumpe Minimal-Arbeitspunkt - Temp.diff zu Referenz;uint16_t;K;1;10;####,# K;ALL;60;
+SOL.Hz.RotControl.Max.Power;38;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;100;HeizungsPumpe Maximal-Arbeitspunkt - Leistung;uint16_t;%;1;1;### %;ALL;100;
+SOL.Hz.RotControl.Max.TempDiff;39;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;500;HeizungsPumpe Maximal-Arbeitspunkt - Temp.diff zu Referenz;uint16_t;K;1;10;####,# K;ALL;100;
+SOL.Coll.MinTemp;40;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;100;700;Temp.marke MinimumKollektorTemperatur;uint16_t;°C;1;10;####,# °C;ALL;400;
+SOL.Coll.MinTemp.Hyst;41;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;150;Temp.marke MinimumKollektorTemperatur-Hysterese;uint16_t;K;1;10;####,# K;ALL;30;
+SOL.Sp.MaxStop.Temp.Active;42;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;360;990;Temp.marke SPMaxAbschaltung-Ein;uint16_t;°C;1;10;####,# °C;ALL;800;
+SOL.Sp.MaxStop.Temp.Inactive;43;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;350;980;Temp.marke SPMaxAbschaltung-Aus;uint16_t;°C;1;10;####,# °C;ALL;770;
+SOL.Coll.Cooling.Temp.Active;44;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;910;1400;Temp.marke Kollektor-Kuehlung-Ein (bei SPMax-Abschaltung);uint16_t;°C;1;10;####,# °C;ALL;1200;
+SOL.Coll.Cooling.Temp.Inactive;45;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;900;1390;Temp.marke Kollektor-Kuehlung-Aus (bei SPMax-Abschaltung);uint16_t;°C;1;10;####,# °C;ALL;1150;
+SOL.Coll.Steam.Temp.Active;46;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1210;1500;Temp.marke Koll.pumpe-Schutz bei Dampf-Ein;uint16_t;°C;1;10;####,# °C;ALL;1400;
+SOL.Coll.Steam.Temp.Inactive;47;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1200;1490;Temp.marke Koll.pumpe-Schutz bei Dampf-Aus;uint16_t;°C;1;10;####,# °C;ALL;1300;
+SOL.Coll.VTemp.MPT;48;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;400;1000;Temp.marke Koll.-Vorlauftemp. ab der Kollektorpumpe MaxDrehzahl faehrt;uint16_t;°C;1;10;####,# °C;ALL;800;
+SOL.HZ.VTemp.MPT;49;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;400;1000;Temp.marke HZ-Vorlauftemp. ab der Heizungspumpe MaxDrehzahl faehrt;uint16_t;°C;1;10;####,# °C;ALL;750;
+SOL.Coll.TestRun.Switch;50;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Schalter fuer Kollektor-Probeanlauf;uint16_t;;1;1;;ALL;1;
+SOL.Coll.TestRun.Begin;51;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;7;19;Stunde fuer Beginn des Kollektor-Probeanlaufs;uint16_t;;1;1;;ALL;9;
+SOL.Coll.TestRun.End;52;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;8;20;Stunde fuer Ende des Kollektor-Probeanlaufs;uint16_t;;1;1;;ALL;17;
+SOL.Coll.TestRun.Duration;53;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;240;Laufzeit Kollektor-Probeanlauf;uint16_t;s;1;1;### s;ALL;15;
+SOL.Coll.TestRun.Pause;54;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;90;Pausenzeit Kollektor-Probeanlauf;uint16_t;Min;1;1;## Min;ALL;20;
+SOL.Hz.VLSwitch.ToTop.DeltaT;55;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;200;Heizungs-Vorlauf-Umschaltung - Ein - deltaT;uint16_t;K;1;10;####,# K;ALL;30;
+SOL.Hz.VLSwitch.ToTop.Delay;56;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;30;Heizungs-Vorlauf-Umschaltung - Ein - Zeitverzögerung;uint16_t;Min;1;1;## Min;ALL;1;
+SOL.Hz.VLSwitch.ToBot.DeltaT;57;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;199;Heizungs-Vorlauf-Umschaltung - Aus - deltaT;uint16_t;K;1;10;####,# K;ALL;0;
+SOL.Hz.VLSwitch.ToBot.Delay;58;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;30;Heizungs-Vorlauf-Umschaltung - Aus - Zeitverzögerung;uint16_t;Min;1;1;## Min;ALL;1;
+SYS.CollectiveFaultSignal;0;coil;READ_ONLY;0;1;Sammelstörmeldung;uint16_t;;1;1;;ALL;0;0
+SYS.Update;1;coil;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;System-Reset;uint16_t;;1;1;;ADMIN;0;
+SYS.Coll.OPHour.Reset;2;coil;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Betriebsstunden-Zaehler Reset;uint16_t;;1;1;;ALL;0;
+SYS.Coll.Energy.Reset;3;coil;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Energie-Zaehler Reset;uint16_t;;1;1;;ALL;0;
+SOL.Actor.Status.Coll.Pump.Supply;10;coil;READ_ONLY;0;1;Status Kollektorpumpe-Versorgung (A01);uint16_t;;1;1;;ALL;0;1
+SOL.Actor.Status.Hz.Pump.Supply;11;coil;READ_ONLY;0;1;Status Heizungspumpe-Versorgung (A02) ;uint16_t;;1;1;;ALL;0;2
+SOL.Actor.Status.Hz.Valve.Supply;12;coil;READ_ONLY;0;1;Status Heizungsventil-Schaltphase (A03);uint16_t;;1;1;;ALL;0;3
+SOL.Actor.Status.Hz.SwitchValve.Supply;13;coil;READ_ONLY;0;1;Status VL-Umschaltventil-Schaltphase (A04);uint16_t;;1;1;;ALL;0;4
+SOL.Actor.Status.A05;14;coil;READ_ONLY;0;1;Status (A05);uint16_t;;1;1;;ALL;0;5
+SOL.Actor.Status.Fault;15;coil;READ_ONLY;0;1;Status Störmeldung (A06);uint16_t;;1;1;;ALL;0;6
+SOL.Actor.Status.Coll.Pump.Signal;16;coil;READ_ONLY;0;1;Status Kollektorpumpe-Signal (A07);uint16_t;;1;1;;ALL;0;7
+SOL.Actor.Status.Hz.Pump.Signal;17;coil;READ_ONLY;0;1;Status Heizungspumpe-Signal (A08);uint16_t;;1;1;;ALL;0;8
+SYS.CollectiveFault.BitField;0;Input-register;READ_ONLY;0;65535;System-Fehlermeldungen-Bits;uint16_t;;1;1;;ALL;0;9
+SYS.Config.TFOffset;1;Input-register;READ_ONLY;-30;30;Werkmenue Konfiguration TF-Offset;int16_t;°C;1;10;####,# °C;ALL;0;
+SYS.Config.SolHzVL;2;Input-register;READ_ONLY;0;1;Werkmenue Konfiguration Solar-HZ-Vorlaufumschaltung;uint16_t;;1;1;#;ALL;0;
+SYS.Config.FaultSignal;3;Input-register;READ_ONLY;0;1;Werkmenue Konfiguration SammelStoerMeldung;uint16_t;;1;1;#;ALL;0;
+SYS.Config.Modbus;4;Input-register;READ_ONLY;0;1;Werkmenue Konfiguration Modbus;uint16_t;;1;1;#;ALL;0;
+SYS.Config.Modbus.Ext;5;Input-register;READ_ONLY;0;1;Werkmenue Konfiguration Modbus-Extension;uint16_t;;1;1;#;ALL;0;
+SYS.Config.A06.Function;6;Input-register;READ_ONLY;0;1;Werkmenue Konfiguration  A06-Funktion;uint16_t;;1;1;#;ALL;0;
+SOL.TSensor.Coll.Coll1;8;input-register;READ_ONLY;-500;2000;Temperatur Solar-Kollektor1 (TF01);int16_t;°C;1;10;####,# °C;ALL;0;10
+SOL.TSensor.Coll.Coll2;9;input-register;READ_ONLY;-500;2000;Temperatur Solar-Kollektor2 (TF06);int16_t;°C;1;10;####,# °C;ALL;0;
+SOL.TSensor.Coll.Forward;10;input-register;READ_ONLY;-500;1260;Temperatur Solar-Kollektor-VL (TF07);int16_t;°C;1;10;####,# °C;ALL;0;11
+SOL.TSensor.Coll.Return;11;input-register;READ_ONLY;-500;1260;Temperatur Solar-Kollektor-RL (TF08);int16_t;°C;1;10;####,# °C;ALL;0;12
+SOL.TSensor.Hz.Forward;12;input-register;READ_ONLY;-500;1260;Temperatur Solar-HZ-VL (TF02);int16_t;°C;1;10;####,# °C;ALL;0;13
+SOL.TSensor.Hz.Return;13;input-register;READ_ONLY;-500;1260;Temperatur Solar-HZ-RL (TF03);int16_t;°C;1;10;####,# °C;ALL;0;14
+SOL.TSensor.Sp.Top;14;input-register;READ_ONLY;-500;1260;Temperatur Solar-Speicher-oben (TF04);int16_t;°C;1;10;####,# °C;ALL;0;15
+SOL.TSensor.Sp.Bottom;15;input-register;READ_ONLY;-500;1260;Temperatur Solar-Speicher-unten (TF05);int16_t;°C;1;10;####,# °C;ALL;0;16
+SOL.SP.RotControl.RefTemp;16;input-register;READ_ONLY;-500;1260;SP-Referenz.temp für Drehzahlregelungen;int16_t;°C;1;10;####,# °C;ALL;0;
+SOL.Coll.RotControl.MinTemp;17;input-register;READ_ONLY;-500;1260;Kollektor-Mind.Zieltemperatur für Drehzahlregelung;int16_t;°C;1;10;####,# °C;ALL;0;
+SOL.Hz.RotControl.MinTemp;18;input-register;READ_ONLY;-500;1260;HZ-Mind.Zieltemperatur für Drehzahlregelung;int16_t;°C;1;10;####,# °C;ALL;0;
+SOL.OPTime.Total.Hour.LSB;20;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Gesamt - Stunden Bit0-15;uint16_t;;1;1;;ALL;0;17
+SOL.OPTime.Total.Hour.MSB;21;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Gesamt - Stunden Bit16-31;uint16_t;;1;1;;ALL;0;18
+SOL.OPTime.Total.Minute;22;input-register;READ_ONLY;0;59;SOL-Betriebsstundenzaehler - Gesamt - Minuten;uint16_t;;1;1;;ALL;0;19
+SOL.OPTime.Day.Hour;23;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Tag - Stunden;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Day.Minute;24;input-register;READ_ONLY;0;59;SOL-Betriebsstundenzaehler - Tag - Minuten;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Yesterday.Hour;25;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Vortag - Stunden;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Yesterday.Minute;26;input-register;READ_ONLY;0;59;SOL-Betriebsstundenzaehler - Vortag - Minuten;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Week.Hour;27;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Woche - Stunden;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Week.Minute;28;input-register;READ_ONLY;0;59;SOL-Betriebsstundenzaehler - Woche - Minuten;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Yesterweek.Hour;29;input-register;READ_ONLY;0;65535;SOL-Betriebsstundenzaehler - Vorwoche - Stunden;uint16_t;;1;1;;ALL;0;
+SOL.OPTime.Yesterweek.Minute;30;input-register;READ_ONLY;0;59;SOL-Betriebsstundenzaehler - Vorwoche - Minuten;uint16_t;;1;1;;ALL;0;
+SOL.Coll.Flow;31;input-register;READ_ONLY;0;1000;SOL-Kollektor Volumenstrom;uint16_t;l/min;1;10;####,# l/min;ALL;0;20
+SOL.Coll.Air.Detect;32;input-register;READ_ONLY;0;1;SOL-Kollektor Luft-Erkennung;uint16_t;;1;1;#;ALL;0;
+SOL.Coll.Air.Level;33;input-register;READ_ONLY;0;4;SOL-Kollektor Luft-Level;uint16_t;;1;1;#;ALL;0;21
+SOL.Coll.Pressure;34;input-register;READ_ONLY;0;1000;SOL-Kollektor Druck;uint16_t;bar;1;10;##,# bar;ALL;0;22
+SOL.Coll.GlycolConc;35;input-register;READ_ONLY;0;1000;SOL-Kollektor Glykol-Konzentration;uint16_t;%;1;10;###,# %;ALL;0;23
+SOL.Coll.FreezingPoint;36;input-register;READ_ONLY;-500;0;SOL-Kollektor Gefrierpunkt;int16_t;°C;1;10;####,# °C;ALL;0;
+SOL.Coll.Power;37;input-register;READ_ONLY;0;9999;SOL-Kollektor Leistung;uint16_t;kW;1;10;####,# kW;ALL;0;24
+SOL.Coll.Energy.All.MWh;38;input-register;READ_ONLY;0;65535;SOL-Kollektor Energie Gesamt MWh;uint16_t;MWh;1;1;##### MWh;ALL;0;25
+SOL.Coll.Energy.All.kWh;39;input-register;READ_ONLY;0;999;SOL-Kollektor Energie Gesamt kWh;uint16_t;kWh;1;1;##### kWh;ALL;0;26
+SOL.Coll.Energy.Today;40;input-register;READ_ONLY;0;9999;SOL-Kollektor Energie heute;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SOL.Coll.Energy.Yesterday;41;input-register;READ_ONLY;0;9999;SOL-Kollektor Energie gestern;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SOL.Coll.Energy.Week;42;input-register;READ_ONLY;0;65535;SOL-Kollektor Energie Woche;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SOL.Coll.Energy.Preweek;43;input-register;READ_ONLY;0;65535;SOL-Kollektor Energie Vorwoche;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SOL.Coll.Energy.Month.MWh;44;input-register;READ_ONLY;0;65535;SOL-Kollektor Energie Monat MWh;uint16_t;MWh;1;1;##### MWh;ALL;0;
+SOL.Coll.Energy.Month.kWh;45;input-register;READ_ONLY;0;9999;SOL-Kollektor Energie Monat kWh;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SOL.Coll.Energy.Premonth.MWh;46;input-register;READ_ONLY;0;65535;SOL-Kollektor Energie Vormonat MWh;uint16_t;MWh;1;1;##### MWh;ALL;0;
+SOL.Coll.Energy.Premonth.kWh;47;input-register;READ_ONLY;0;9999;SOL-Kollektor Energie Vormonat kWh;uint16_t;kWh;1;10;####,# kWh;ALL;0;
+SYS.FIRMWARE.0;200;input-register;READ_ONLY;0;65535;Firmware byte 1-2;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.1;201;input-register;READ_ONLY;0;65535;Firmware byte 3-4;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.2;202;input-register;READ_ONLY;0;65535;Firmware byte 5-6;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.3;203;input-register;READ_ONLY;0;65535;Firmware byte 7-8;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.4;204;input-register;READ_ONLY;0;65535;Firmware byte 9-10;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.5;205;input-register;READ_ONLY;0;65535;Firmware byte 11-12;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.6;206;input-register;READ_ONLY;0;65535;Firmware byte 13-14;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.7;207;input-register;READ_ONLY;0;65535;Firmware byte 15-16;uint16_t;;1;1;#*;;128;

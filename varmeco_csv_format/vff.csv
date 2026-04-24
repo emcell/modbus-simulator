@@ -1,0 +1,167 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultValue;DefaultExtModbusIndex
+SYS.CollectiveFaultSignal;0;coil;READ_ONLY;0;1;Sammelstoermeldung;uint16_t;;1;1;#;ALL;0;1
+SYS.Update;1;coil;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;System-Reset;uint16_t;;1;1;#;ADMIN;0;0
+SYS.Time.Hour;0;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Systemzeit-Stunde;uint16_t;;1;1;##;ALL;12;
+SYS.Time.Minute;1;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Systemzeit-Minute;uint16_t;;1;1;##;ALL;0;
+SYS.Time.Year;2;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;99;Systemdatum-Jahr;uint16_t;;1;1;##;ALL;25;
+SYS.Time.Month;3;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;12;Systemdatum-Monat;uint16_t;;1;1;##;ALL;1;
+SYS.Time.Day;4;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;31;Systemdatum-Tag;uint16_t;;1;1;##;ALL;1;
+SYS.OperationMode.CirculationPump;5;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A01 Betriebsmodus Zirkulations-Pumpe;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.HgPump;6;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A02 Betriebsmodus HG-Pumpe;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.A03;7;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A03 Betriebsmodus;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.A04;8;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A04 Betriebsmodus;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.CollectiveFaultSignal;9;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A05 Betriebsmodus SammelStoerMeldung SSM;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.A06;10;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A06 Betriebsmodus;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.FWE.AdjustableThrottleValve;11;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A07 Betriebsmodus FWE-regelb.Drosselventil (OptiStep);uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.FWE.AdjustableThrottleValve.PWM.On;12;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;A07 relativer  ffnungsgrad FWE-regelb.Drosselventil (OptiStep);int16_t;%;1;1;####%;SERVICE1;100;
+SYS.OperationMode.HG.AdjustableThrottleValve;13;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A08 Betriebsmodus HG-regelb.Drosselventil;uint16_t;;1;1;#;SERVICE1;2;
+SYS.OperationMode.HG.AdjustableThrottleValve.PWM.On;14;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;A08 0..10V HG-regelb.Drosselventil;int16_t;V;1;10;###,#V;SERVICE1;50;
+HG.Ambient.Temperature;15;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;500;TF06 Extern-Wert HG-AT;int16_t;°C;1;10;####,# °C;ALL;0;2
+SYS.OperationMode.DI01;16;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DI01 Betriebsmodus;uint16_t;;1;1;#;SERVICE1;0;
+SYS.OperationValue.DI01;17;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DI01 Wert;uint16_t;;1;1;#;SERVICE1;0;
+FWE.Switch;18;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;FWE-Bereitung Schalter;uint16_t;;1;1;#;ALL;2;
+FWE.SetPoint;19;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;300;600;FWE-Solltemperatur;int16_t;°C;1;10;####,# °C;ALL;450;3
+FWE.VFL.TempRetaining.OpenTemp;20;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;200;550;VFL-Temp.vorhaltung Auf-Temp.;int16_t;°C;1;10;####,# °C;SERVICE1;350;
+FWE.VFL.TempRetaining.CloseTemp;21;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;250;600;VFL-Temp.vorhaltung Zu-Temp.;int16_t;°C;1;10;####,# °C;SERVICE1;400;
+ZP.Switch;22;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP-Betrieb Schalter;uint16_t;;1;1;#;ALL;1;
+ZP.StartMode;23;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;3;ZP-Startmodus;uint16_t;;1;1;#;ALL;2;
+ZP.Runtime;24;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;ZP-Laufzeit;uint16_t;min;1;1;#* min;ALL;59;
+ZP.PauseTime;25;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;ZP-Pausenzeit;uint16_t;min;1;1;#* min;ALL;1;
+ZP.Stop.Mode;26;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP Abschalt-Modus;uint16_t;;1;1;#;ALL;1;
+ZP.Stop.DeltaT;27;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;20;200;ZP Abschalt-deltaT;uint16_t;K;1;10;####,# K;ALL;100;
+HG.Switch;28;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG-Betrieb Schalter;uint16_t;;1;1;#;ALL;1;
+HG.HeatCurve.Slope;29;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;30;HG-Heizkurve Steigung;uint16_t;K;1;10;####,# K;ALL;10;
+HG.HeatCurve.ParallelShift;30;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;40;HG-Heizkurve Parallelversch.;uint16_t;K;1;1;#### K;ALL;10;
+HG.HeatCurve.MinTemp;31;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;150;800;HG-Heizkurve Min.temp.;uint16_t;°C;1;10;####,# °C;ALL;400;
+HG.HeatCurve.MaxTemp;32;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;150;900;HG-Heizkurve Max.temp.;uint16_t;°C;1;10;####,# °C;ALL;600;
+HG.Stop.AmbientTemp;33;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;50;550;HG-AT-Abschalttemp.;uint16_t;°C;1;10;####,# °C;ALL;180;
+HG.Party.State;34;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG-Partyprg. Status;uint16_t;;1;1;#;ALL;1;
+HG.Party.FlowShift;35;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-200;200;HG-Partyprg. VT-Verschiebung;int16_t;K;1;10;####,# K;ALL;10;
+HG.Party.Runtime.Days;36;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;99;HG-Partyprg. Laufzeit Tage;uint16_t;;1;1;##;ALL;10;
+HG.Party.Runtime.Hours;37;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;HG-Partyprg. Laufzeit Stunden;uint16_t;;1;1;##;ALL;0;
+HG.WP.VTNomShift;38;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-210;200;HG-Wochenprg. VT-Verschiebung;int16_t;K;1;10;####,# K;ALL;10;
+SYS.Time.DaylightSaving;50;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Systemdatum/zeit-DaylightSavingTime ;uint16_t;;1;1;#;ALL;1;
+SYS.Config.AntiLock.Switch;51;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;SYS-Konf. Antiblockierfunktion-Schalter;uint16_t;;1;1;#;SERVICE1;1;
+SYS.Config.AntiLock.HourOfDay;52;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;SYS-Konf. Antiblockierfunktion-Uhrzeit;uint16_t;;1;1;##;SERVICE1;2;
+SYS.Config.Modbus.SlaveId;53;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;128;SYS-Konf. Modbus-Slaveadresse;uint16_t;;1;1;###;SERVICE1;1;
+SYS.Config.Language;54;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;0;SYS-Konf. Sprache;uint16_t;;1;1;#;SERVICE1;0;
+SYS.Config.FactoryDefaults;55;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;123;123;SYS-Konf. Reset auf Werkseinstellung;uint16_t;;1;1;###;ADMIN;0;
+SYS.A06.Function;56;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;0;A06-Konfig Funktion;uint16_t;;1;1;#;ADMIN;0;
+SYS.VFF.HZModul.Cfg;57;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;3;VF-flat Heizungsmodul-Konfiguration;uint16_t;;1;1;#;SERVICE1;1;
+SYS.VFF.RoomCtrl.Cfg;58;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;VF-flat Raumregelbox-Konfiguration;uint16_t;;1;1;#;SERVICE1;1;
+FWE.ScaldProtection.Temperature.Top;59;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;500;650;FWE-Verbruehschutz oben-Temp.;uint16_t;°C;1;10;####,# °C;SERVICE1;650;
+FWE.ScaldProtection.Temperature.Bottom;60;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;500;650;FWE-Verbruehschutz unten-Temp.;uint16_t;°C;1;10;####,# °C;SERVICE1;600;
+FWE.PerformanceFactor;61;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;50;150;FWE-Leistungsfaktor;uint16_t;%;1;1;### %;ADMIN;100;
+FWE.FaultDetection.Come.Delay;62;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;90;"FWE-Stoererkennung ""kommt"" Zeitverzoegerung";uint16_t;min;1;1;### min;ADMIN;30;
+FWE.FaultDetection.Come.DeltaT.InOut;63;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;200;"FWE-Stoererkennung ""kommt"" dT Ein-Austritt";uint16_t;°C;1;10;####,# °C;ADMIN;0;
+FWE.FaultDetection.Come.Out.Min;64;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;300;"FWE-Stoererkennung ""kommt"" Austritt-Min.";uint16_t;°C;1;10;####,# °C;ADMIN;0;
+FWE.FaultDetection.Interval;65;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;240;FWE-Stoererkennung Neupruefung-Intervallzeit;uint16_t;min;1;1;### min;ADMIN;0;
+FWE.FaultDetection.Leave.DeltaT.InOut;66;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;200;"FWE-Stoererkennung ""geht"" dT Ein-Austritt";uint16_t;°C;1;10;####,# °C;ADMIN;0;
+FWE.FaultDetection.Leave.Out.Min;67;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;600;"FWE-Stoererkennung ""geht"" Austritt-Min.";uint16_t;°C;1;10;####,# °C;ADMIN;0;
+FWE.HZ.RV.P.Interval;68;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;20;FWE-HZ-RV P-Regler Zykluszeit;uint16_t;s;1;1;### s;ADMIN;0;
+FWE.HZ.RV.P.Kp;69;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;FWE-HZ-RV P-Regler Verst.faktor Kp;uint16_t;;1;10;###,#;ADMIN;0;
+FWE.HZ.RV.P.Base;70;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1000;FWE-HZ-RV P-Regler Basis;uint16_t;%;1;10;####,# %;ADMIN;0;
+FWE.HZ.RV.P.Saturation.Min;71;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-1000;-10;FWE-HZ-RV P-Regler Saettigung Min.;int16_t;%;1;10;####,# %;ADMIN;0;
+FWE.HZ.RV.P.Saturation.Max;72;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1000;FWE-HZ-RV P-Regler Saettigung Max.;uint16_t;%;1;10;####,# %;ADMIN;0;
+FWE.HZ.RV.I.Interval;73;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;30;FWE-HZ-RV I-Regler Zykluszeit;uint16_t;s;1;1;### s;ADMIN;0;
+FWE.HZ.RV.I.Ki;74;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;FWE-HZ-RV I-Regler Verst.faktor Ki;uint16_t;;1;10;###,#;ADMIN;0;
+FWE.HZ.RV.I.Ti;75;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;120;FWE-HZ-RV I-Regler Nachstellzeit Ti;uint16_t;s;1;1;### s;ADMIN;0;
+FWE.HZ.RV.I.Saturation.Min;76;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-1000;-10;FWE-HZ-RV I-Regler Saettigung Min.;int16_t;%;1;10;####,# %;ADMIN;0;
+FWE.HZ.RV.I.Saturation.Max;77;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;1000;FWE-HZ-RV I-Regler Saettigung Max.;uint16_t;%;1;10;####,# %;ADMIN;0;
+ZP.Available;78;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP-Konfig. vorhanden/verwendet;uint16_t;;1;1;#;SERVICE1;0;
+HG.Available;79;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG-Konfig. vorhanden/verwendet;uint16_t;;1;1;#;SERVICE1;1;
+HG.AmbientTemperature.Source;80;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;HG-Konfig. AT-Quelle;uint16_t;;1;1;#;SERVICE1;2;
+HG.TWW.Priority;81;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG-Konfig. TWW-Vorrang verwendet;uint16_t;;1;1;#;ALL;0;
+HG.Mixer.Less.Stop.Deviation;82;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;50;HG-Mischer Tist<Tsoll Stop-Abweichung;uint16_t;K;1;10;###,# K;SERVICE1;0;
+HG.Mixer.Less.Speed1.Speed;83;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;200;HG-Mischer Tist<Tsoll Geschw.1;uint16_t;%/K;1;10;###,# %/K;SERVICE1;0;
+HG.Mixer.Less.Speed1.Deviation;84;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;200;HG-Mischer Tist<Tsoll Geschw.1-Abweichung;uint16_t;K;1;10;###,# K;SERVICE1;0;
+HG.Mixer.Less.Speed2.Speed;85;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;250;HG-Mischer Tist<Tsoll Geschw.2;uint16_t;%/K;1;10;###,# %/K;SERVICE1;0;
+HG.Mixer.Less.SpeedMax;86;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;100;HG-Mischer Tist<Tsoll Geschw.-Max.;uint16_t;%;1;1;### %;SERVICE1;0;
+HG.Mixer.Greater.Stop.Deviation;87;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;50;HG-Mischer Tist>Tsoll Stop-Abweichung;uint16_t;K;1;10;###,# K;SERVICE1;0;
+HG.Mixer.Greater.Speed1.Speed;88;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;200;HG-Mischer Tist>Tsoll Geschw.1;uint16_t;%/K;1;10;###,# %/K;SERVICE1;0;
+HG.Mixer.Greater.Speed1.Deviation;89;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;200;HG-Mischer Tist>Tsoll Geschw.1-Abweichung;uint16_t;K;1;10;###,# K;SERVICE1;0;
+HG.Mixer.Greater.Speed2.Speed;90;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;250;HG-Mischer Tist>Tsoll Geschw.2;uint16_t;%/K;1;10;###,# %/K;SERVICE1;0;
+HG.Mixer.Greater.SpeedMax;91;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;100;HG-Mischer Tist>Tsoll Geschw.-Max.;uint16_t;%;1;1;### %;SERVICE1;0;
+FWE.KNN.Neuron.Select;92;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;48;FWE-KNN selektiertes Neuron f. Wertabfrage;uint16_t;;1;1;#*;ADMIN;0;
+HG.Mixer.Drive.Type;93;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG-Mischer Antrieb-Typ;uint16_t;;1;1;#;SERVICE1;0;
+HG.Mixer.Less.TInt.Lo;94;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;240;HG-Mischer Nachstellzeit-niedrig der Stellgeschw. bei pos. Abw.;uint16_t;s;1;1;### s;ADMIN;0;
+HG.Mixer.Less.TInt.Hi;95;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;240;HG-Mischer Nachstellzeit-hoch der Stellgeschw. bei pos. Abw.;uint16_t;s;1;1;### s;ADMIN;0;
+HG.Mixer.Greater.TInt.Lo;96;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;240;HG-Mischer Nachstellzeit-niedrig der Stellgeschw. bei neg. Abw.;uint16_t;s;1;1;### s;ADMIN;0;
+HG.Mixer.Greater.TInt.Hi;97;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;240;HG-Mischer Nachstellzeit-hoch der Stellgeschw. bei neg. Abw.;uint16_t;s;1;1;### s;ADMIN;0;
+SYS.VFF.Preheat.Aperture;98;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;100;Oeffnungsgrad des Ventils (OptiStep) bei Vorwaermung;uint16_t;%;1;1;### %;SERVICE1;5;
+SYS.OptiStep.Calibrate;100;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;129;OptiStep: Kalibrierfahrt ausf hren (24=Stoessel raus, 129=Stoessel rein);int16_t;;1;1;###;SERVICE1;0;
+SYS.OptiStep.AbsPos.Percent;101;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1000;OptiStep: fahre absolut in Stepper-Position in 0.1%;int16_t;;1;10;####,#%;SERVICE1;0;
+SYS.OptiStep.RelPos.Percent;102;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-1000;1000;OptiStep: fahre relativ zur aktuellen Stepper-Position in 0.1%;int16_t;;1;10;####,#%;SERVICE1;0;
+SYS.OptiStep.AbsPos.MicroSteps;103;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;12480;OptiStep: fahre absolut in Stepper-Position in microSteps;int16_t;;1;1;######;SERVICE1;0;
+SYS.OptiStep.RelPos.MicroSteps;104;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-12480;12480;OptiStep: fahre relativ zur aktuellen Stepper-Position in microSteps;int16_t;;1;1;######;SERVICE1;0;
+SYS.Config.TfOffset;0;input-register;READ_ONLY;-30;30;SYS-Konfiguration TF-Offset;int16_t;°C;1;10;####,# °C;SERVICE1;0;
+SYS.Config.HzCount;1;input-register;READ_ONLY;0;1;SYS-Konfiguration HZ Anzahl;uint16_t;;1;1;#;SERVICE1;0;
+SYS.Config.FaultSignal;2;input-register;READ_ONLY;0;1;SYS-Konfiguration Stoermeldekontakt ;uint16_t;;1;1;#;ALL;0;
+SYS.Config.TWW.SetPoint.Max;3;input-register;READ_ONLY;600;800;SYS-Konfiguration TWW-Soll-Max.temp.;uint16_t;°C;1;10;####,# °C;ADMIN;0;
+SYS.Config.ThermalDesinfection;4;input-register;READ_ONLY;0;1;SYS-Konfiguration therm.Desinf.;uint16_t;;1;1;#;ALL;0;
+SYS.Config.Modbus;5;input-register;READ_ONLY;0;1;SYS-Konfiguration Modbus;uint16_t;;1;1;#;SERVICE1;0;
+SYS.Config.A06.Function;6;input-register;READ_ONLY;0;1;SYS-Konfiguration A06-Funktion;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF01.FWE.Inlet;10;input-register;READ_ONLY;-500;1260;Temperatur Netz/FWE-Eintritt;int16_t;°C;1;10;####,# °C;ALL;200;4
+SYS.TF02.FWE.Outlet;11;input-register;READ_ONLY;-500;1260;Temperatur Netz/FWE-Austritt;int16_t;°C;1;10;####,# °C;ALL;450;5
+FWE.TF03.TWK.Z.Inlet;12;input-register;READ_ONLY;-500;1260;Temperatur FWE-TWK/Z-Eintritt;int16_t;°C;1;10;####,# °C;ALL;350;6
+FWE.TF04.TWW.Outlet;13;input-register;READ_ONLY;-500;1260;Temperatur FWE-TWW-Austritt;int16_t;°C;1;10;####,# °C;ALL;450;7
+SYS.TF05.HG.Flow;14;input-register;READ_ONLY;-500;1260;Temperatur HG-Vorlauf;int16_t;°C;1;10;####,# °C;ALL;400;8
+SYS.TF06.HG.Ambient;15;input-register;READ_ONLY;-500;1260;Temperatur HG-Aussen;int16_t;°C;1;10;####,# °C;ALL;100;9
+SYS.VSS01.FWE.Volume.Network;16;input-register;READ_ONLY;0;65535;Vol.strom FWE-Netz-Seite;uint16_t;l/min;1;10;####,# l/min;ALL;100;10
+FWE.VSS02.Volume.TW;17;input-register;READ_ONLY;0;65535;Vol.strom FWE-TW-Seite;uint16_t;l/min;1;10;####,# l/min;ALL;200;11
+SYS.A01.FWE.CirculationPump.Status;18;input-register;READ_ONLY;0;1;A01 - FWE-Zirkulationspumpe-Status;uint16_t;;1;1;#*;ALL;1;12
+SYS.A02.HG.CirculationPump.Status;19;input-register;READ_ONLY;0;1;A02 - HG-Umwaelzpumpe-Status;uint16_t;;1;1;#*;ALL;1;13
+SYS.A03.TemperatureRetentionValve.Status;20;input-register;READ_ONLY;0;1000;A03 - Status;uint16_t;;1;1;#*;ALL;0;14
+SYS.A04.Status;21;input-register;READ_ONLY;0;1000;A04 - Status;uint16_t;;1;1;#*;ALL;1;
+SYS.A05.FaultSignal.Status;22;input-register;READ_ONLY;0;1000;A05-Stoermeldung-Status;uint16_t;;1;1;#*;ALL;0;
+SYS.A06.Status;23;input-register;READ_ONLY;0;1000;A06-Status;uint16_t;;1;1;#*;ALL;1;
+SYS.A07.FWE.HZ.ControlValve.PWM;24;input-register;READ_ONLY;0;1000;A07-FWE-HZ-Regelventil Oeffnungsgrad;uint16_t;%;1;1;####%;ALL;0;15
+SYS.A08.HG.ControlValve.PWM;25;input-register;READ_ONLY;0;1000;A08-HG-Regelventil Oeffnungsgrad;uint16_t;%;1;1;####%;ALL;0;16
+FWE.RV.HZ.Volume.SetPoint;26;input-register;READ_ONLY;0;65535;FWE-RV HZVol.stromSoll;uint16_t;l/min;1;10;####,# l/min;SERVICE1;0;17
+FWE.RV.HZ.Volume;27;input-register;READ_ONLY;0;65535;FWE-RV HZVol.stromIst;uint16_t;l/min;1;10;####,# l/min;SERVICE1;0;18
+FWE.RV.Valve.Opening;28;input-register;READ_ONLY;0;1000;FWE-RV-Regler Ausgabewert-Ist;uint16_t;%;1;10;####,# %;SERVICE1;0;
+HG.VT.SetPoint;29;input-register;READ_ONLY;0;1000;HG-VT-Soll;int16_t;°C;1;10;####,# °C;ALL;0;19
+HG.VT.Deviation;30;input-register;READ_ONLY;-1000;1000;HG-VT-Abweichung;int16_t;°C;1;10;####,# °C;ALL;0;
+HG.Mixer.Speed.Open;31;input-register;READ_ONLY;0;1000;HG-Mischer Geschw.-Auf aktuell;uint16_t;%;1;1;### %;SERVICE1;0;
+HG.Mixer.Speed.Close;32;input-register;READ_ONLY;0;1000;HG-Mischer Geschw.-Zu aktuell;uint16_t;%;1;1;### %;SERVICE1;0;
+HG.RV.Valve.Opening;33;input-register;READ_ONLY;0;1000;HG-RV-Regler Ausgabewert-Ist;uint16_t;%;1;10;####,# %;SERVICE1;0;
+HG.TWW.Priority.Active;34;input-register;READ_ONLY;0;1;HG-TWWVorrang Aktiv;uint16_t;;1;1;#;SERVICE1;0;20
+HG.StateAndVT.Info;35;input-register;READ_ONLY;0;5;HG-Info Zustand und VT-Bestimmung;uint16_t;;1;1;#;ALL;0;
+FWE.RV.Hz.Volume.SetPoint.KNN;50;input-register;READ_ONLY;0;65535;FWE-RV HZVol.stromSoll-KNN;uint16_t;l/min;1;10;#####,# l/min;SERVICE1;0;
+FWE.RV.Hz.Volume.SetPoint.PD;51;input-register;READ_ONLY;0;65535;FWE-RV HZVol.stromSoll-PD;uint16_t;l/min;1;10;#####,# l/min;SERVICE1;0;
+FWE.RV.Hz.Volume.SetPoint.I;52;input-register;READ_ONLY;0;65535;FWE-RV HZVol.stromSoll-I;uint16_t;l/min;1;10;#####,# l/min;SERVICE1;0;
+FWE.RV.P.SetPoint;53;input-register;READ_ONLY;0;65535;FWE-RV PReg-Soll;uint16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.P.Value;54;input-register;READ_ONLY;0;65535;FWE-RV PReg-Ist;uint16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.P.Deviation;55;input-register;READ_ONLY;0;65535;FWE-RV PReg-Abweichung;int16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.P.relativeControlVariable;56;input-register;READ_ONLY;0;65535;FWE-RV PReg-relStellgroesse;int16_t;%;1;10;####,# %;ADMIN;0;
+FWE.RV.P.State;57;input-register;READ_ONLY;0;65535;FWE-RV PReg-ZustandAutomat;uint16_t;;1;1;#*;ADMIN;0;
+FWE.RV.P.Saturation;58;input-register;READ_ONLY;0;65535;FWE-RV PReg-Saettigung;uint16_t;;1;1;#*;ADMIN;0;
+FWE.RV.I.SetPoint;59;input-register;READ_ONLY;0;65535;FWE-RV IReg-Soll;uint16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.I.Value;60;input-register;READ_ONLY;0;65535;FWE-RV IReg-Ist;uint16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.I.Deviation;61;input-register;READ_ONLY;0;65535;FWE-RV IReg-Abweichung;int16_t;l/min;1;10;####,# l/min;ADMIN;0;
+FWE.RV.I.DeviationSum;62;input-register;READ_ONLY;0;65535;FWE-RV IReg-AbweichungSummeTn;int16_t;;1;1;#*;ADMIN;0;
+FWE.RV.I.relativeControlVariable;63;input-register;READ_ONLY;0;65535;FWE-RV IReg-relStellgroesseTn;int16_t;%;1;10;####,# %;ADMIN;0;
+FWE.RV.I.State;64;input-register;READ_ONLY;0;65535;FWE-RV IReg-ZustandAutomat;uint16_t;;1;1;#*;ADMIN;0;
+FWE.RV.I.Saturation;65;input-register;READ_ONLY;0;65535;FWE-RV IReg-Saettigung;uint16_t;;1;1;#*;ADMIN;0;
+HG.TWW.Priority.Global.State;66;input-register;READ_ONLY;0;2;HG-TWWVorrang Zustand-Haupt;uint16_t;;1;1;#*;ADMIN;0;
+HG.TWW.Priority.Release.State;67;input-register;READ_ONLY;0;4;HG-TWWVorrang Sub-Zustand-Freigegeben;uint16_t;;1;1;#*;ADMIN;0;
+HG.TWW.Priority.Release.Tap;68;input-register;READ_ONLY;0;4;HG-TWWVorrang Sub-Zustand-Zapferkennung;uint16_t;;1;1;#*;ADMIN;0;
+HG.Mixer.Trigger.Count;69;input-register;READ_ONLY;0;65535;HG-Mischer Trigger-Zaehler des Stellgeschw.-Integrators;uint16_t;;1;1;#*;ADMIN;0;21
+FWE.KNN.Input.TWWSet;70;input-register;READ_ONLY;0;65535;FWE-KNN InpVektor-Wert1 (TWWSolltemp.)  selekt. Neuron;uint16_t;°C;1;10;####,# °C;ADMIN;0;
+FWE.KNN.Input.TWNetElevation;71;input-register;READ_ONLY;0;65535;FWE-KNN InpVektor-Wert2 (Netz-Eintritt-Ueberh.)  selekt. Neuron;uint16_t;K;1;10;####,# K;ADMIN;0;
+FWE.KNN.Output.Volume.1;72;input-register;READ_ONLY;0;65535;FWE-KNN Outp.Wert1 (M1soll niedrig) selekt. Neuron;uint16_t;l/min;1;100;###,## l/min;ADMIN;0;
+FWE.KNN.Output.Volume.2;73;input-register;READ_ONLY;0;65535;FWE-KNN Outp.Wert2 (M1soll mittel) selekt. Neuron;uint16_t;l/min;1;100;###,## l/min;ADMIN;0;
+FWE.KNN.Output.Volume.3;74;input-register;READ_ONLY;0;65535;FWE-KNN Outp.Wert3 (M1soll hoch) selekt. Neuron;uint16_t;l/min;1;100;###,## l/min;ADMIN;0;
+HG.Mixer.DevArea;82;input-register;READ_ONLY;-2;2;HG-Mischer akt. Abweichungs-Bereich zur Geschw.regelung;int16_t;%;1;1;####;ADMIN;0;
+SYS.OptiStep.Firmware;83;input-register;READ_ONLY;0;65535;OptiStep: Firmware-Version (x.x.xx);uint16_t;;1;1;######;ADMIN;0;
+SYS.OptiStep.BootAmount;84;input-register;READ_ONLY;0;65535;OptiStep: Anzahl der Boot-Vorgaenge;uint16_t;;1;1;######;ADMIN;0;
+SYS.OptiStep.Pos.Percent;85;input-register;READ_ONLY;0;1000;OptiStep: aktuelle Stepper-Position in %;uint16_t;%;1;10;#####,# %;ADMIN;0;
+SYS.OptiStep.Pos.MicroSteps;86;input-register;READ_ONLY;0;12480;OptiStep: aktuelle Stepper-Position in microSteps;uint16_t;;1;1;#######;ADMIN;0;
+SYS.FIRMWARE.0;200;input-register;READ_ONLY;0;65535;Firmware byte 1-2;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.1;201;input-register;READ_ONLY;0;65535;Firmware byte 3-4;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.2;202;input-register;READ_ONLY;0;65535;Firmware byte 5-6;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.3;203;input-register;READ_ONLY;0;65535;Firmware byte 7-8;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.4;204;input-register;READ_ONLY;0;65535;Firmware byte 9-10;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.5;205;input-register;READ_ONLY;0;65535;Firmware byte 11-12;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.6;206;input-register;READ_ONLY;0;65535;Firmware byte 13-14;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.7;207;input-register;READ_ONLY;0;65535;Firmware byte 15-16;uint16_t;;1;1;#*;;128;

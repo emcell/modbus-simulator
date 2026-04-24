@@ -105,6 +105,12 @@ export const ImportDeviceTypeMutation = graphql(`
   }
 `);
 
+export const ImportVarmecoCsvMutation = graphql(`
+  mutation ImportVarmecoCsv($name: String!, $description: String, $data: String!) {
+    importVarmecoCsv(name: $name, description: $description, data: $data) { id name }
+  }
+`);
+
 export const UpsertRegisterMutation = graphql(`
   mutation UpsertRegister($deviceTypeId: ID!, $input: RegisterInput!) {
     upsertRegister(deviceTypeId: $deviceTypeId, input: $input) { id }

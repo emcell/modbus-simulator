@@ -1,0 +1,93 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultValue;DefaultExtModbusIndex
+SYS.CollectiveFaultSignal;0;coil;READ_ONLY;0;1;Sammelstörmeldung;uint16_t;;1;1;;ALL;0;0
+SYS.Update;1;coil;WRITE_ONLY;0;1;System-Reset;uint16_t;;1;1;;ADMIN;0;
+SYS.Time.Hour;0;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Systemzeit-Stunde;uint16_t;;1;1;;ALL;12;
+SYS.Time.Minute;1;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Systemzeit-Minute;uint16_t;;1;1;;ALL;0;
+SYS.Time.DayOfWeek;2;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;Systemzeit-Wochentag;uint16_t;;1;1;;ALL;1;
+SYS.CollectiveFault.BitField;0;Input-register;READ_ONLY;0;65535;Sammelstörungsbitfeld;uint16_t;;1;1;;ALL;0;1
+SYS.CollectiveWarn.BitField;1;Input-register;READ_ONLY;0;65535;Sammelwarnungsbitfeld;uint16_t;;1;1;;ALL;0;2
+SYS.CollectiveMessage.BitField;2;Input-register;READ_ONLY;0;65535;Sammelmeldungsbitfeld;uint16_t;;1;1;;ALL;8;3
+FWE.Configuration;3;input-register;READ_ONLY;1;6;FWE-Konfiguration (FWE-Typ);uint16_t;;1;1;;SERVICE1;1;
+ZP.Configuration;4;input-register;READ_ONLY;0;2;ZP-Konfiguration;uint16_t;;1;1;;SERVICE1;1;
+SOL.Configuration;5;input-register;READ_ONLY;0;1;SOL-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+THST.Configuration;6;input-register;READ_ONLY;0;1;Schalt-/Thermostatfunktion-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+SYS.Cascade.Configuration;7;input-register;READ_ONLY;0;1;Kaskadenfunktion-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+SYS.Volume.Sensor.Typ;8;input-register;READ_ONLY;0;2;Volumenstromsensor-Typ;uint16_t;;1;1;;SERVICE1;1;
+FWE.Pump.Status;5;coil;READ_ONLY;0;1;FWE-Pumpe-Status (A01);uint16_t;;1;1;;ALL;1;4
+FWE.Temperature.InletPrimary;12;input-register;READ_ONLY;-270;1005;FWE-Eintrittstemp. / SP-oben (TF02);int16_t;°C;1;10;####,#°C;ALL;700;5
+FWE.Temperature.Outlet;13;input-register;READ_ONLY;-270;1005;FWE-Austrittstemp. (TF01);int16_t;°C;1;10;####,#°C;ALL;450;6
+FWE.Volume;15;input-register;READ_ONLY;0;65535;TWW-Volumenstrom (VSS);uint16_t;l/min;1;10;###,# l/min;ALL;100;7
+FWE.LoadPump;16;input-register;READ_ONLY;0;1000;FWE-Ladepumpe - Leistung (A01);uint16_t;%;1;10;####,# %;ALL;500;8
+FWE.Temperature.InletSecondary;20;input-register;READ_ONLY;-270;1005;FWE-Eintrittstemp. Sekundär (TF03);int16_t;°C;1;10;####,#°C;ALL;300;9
+FWE.LoadPump.Mode;3;Holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;FWE-Ladepumpe - Modus (A01);uint16_t;;1;1;;SERVICE1;2;10
+FWE.Switch;4;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;FWE-Bereitung - Schalter;uint16_t;;1;1;;ALL;1;11
+FWE.TWW.SetPoint;5;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;300;600;FWE-TWW-Solltemperatur;uint16_t;°C;1;10;####,#°C;ALL;500;12
+FWE.LoadPump.Max;6;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;FWE/TWW-Ladepumpenbegrenzung (bei Variante B deaktiviert);uint16_t;%;1;1;### %;SERVICE1;100;
+SYS.Date.Day;7;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;31;Systemdatum-Tag;uint16_t;;1;1;;ALL;20;
+Sys.Date.Month;8;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;12;Systemdatum-Monat;uint16_t;;1;1;;ALL;12;
+Sys.Date.Year;9;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;65535;Systemdatum-Jahr;uint16_t;;1;1;;ALL;2021;
+ZP.Pump.Status;12;coil;READ_ONLY;0;1;ZP-Pumpe-Status (A02);uint16_t;;1;1;;ALL;1;13
+ZP.Switch;16;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;3;ZP-Schalter;uint16_t;;1;1;;ALL;2;14
+ZP.Pump.Mode;17;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;ZP-Pumpe-Modus;uint16_t;;1;1;;SERVICE1;2;15
+ZP.Start.Mode;18;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;ZP-Startmodus;uint16_t;;1;1;;ALL;2;
+ZP.Runtime;19;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;60;ZP-Laufzeit;uint16_t;min;1;1;### min;ALL;3;
+ZP.PauseTime;20;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;60;ZP-Pausenzeit;uint16_t;min;1;1;### min;ALL;30;
+ZP.Stop.Mode;22;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP-Abschalt-Modus;uint16_t;;1;1;;ALL;1;
+ThD.Minutes;24;input-register;READ_ONLY;0;250;ThD-Desinfektionszeit-Ist (abgelaufene Zeit);uint16_t;min;1;1;### min;ALL;0;
+ThD.Result;25;input-register;READ_ONLY;0;2;ThD-Ergebnis des letzten Zyklus;uint16_t;;1;1;;ALL;0;16
+ThD.Minutes.SetPoint;24;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;250;ThD-Desinfektionszeit-Soll (Laufzeit-Vorgabe);uint16_t;min;1;1;### min;ALL;0;
+ThD.FWE.SetPoint;27;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;650;750;ThD-FWE-Solltemperatur (Desinf.temp.);uint16_t;°C;1;10;####,#°C;ALL;0;
+ThD.Storage.SetPoint;25;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;700;950;ThD-Speicher-Solltemperatur (Vorhaltetemp.);uint16_t;°C;1;10;####,#°C;ALL;0;
+ThD.State;26;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;ThD-Ablauf-Zustand;uint16_t;;1;1;;ALL;0;
+THST.Output.State;24;coil;READ_ONLY;0;1;Schalt-/Thermostatfunktion Ausgang-Status (A05);uint16_t;;1;1;;ALL;0;
+THST.Temperature.TF04;40;input-register;READ_ONLY;-270;1005;Schalt-/Thermostatfunktion Ist-Temp. (TF04);int16_t;°C;1;10;####,#°C;ALL;0;
+THST.SetPoint;40;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-270;1005;Schalt-/Thermostatfunktion Referenz/Soll-Temp.;int16_t;°C;1;10;####,#°C;ALL;0;
+THST.DeltaT.Top;41;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;350;Schalt-/Thermostatfunktion deltaT-oben-Wert;uint16_t;K;1;10;####,# K;ALL;0;
+THST.DeltaT.Bottom;42;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;350;Schalt-/Thermostatfunktion deltaT-unten-Wert;uint16_t;K;1;10;####,# K;ALL;0;
+SOL.Collector.Pump.Status;21;coil;READ_ONLY;0;1;SOL-Kollektorpumpe-Status (A03);uint16_t;;1;1;;ALL;0;17
+SOL.Collector.Temperature;36;input-register;READ_ONLY;-270;1005;SOL-Kollektortemperatur (TF05);int16_t;°C;1;10;####,#°C;ALL;0;18
+SOL.SP.Bottom.Temperature;37;input-register;READ_ONLY;-270;1005;SP-unten (TF04);int16_t;°C;1;10;####,#°C;ALL;0;19
+SOL.Pump.Percent;38;input-register;READ_ONLY;0;1000;SOL-Umwälzpumpe Leistung (A03);uint16_t;%;1;10;####,# %;ALL;0;20
+SOL.Collector.Pump.Mode;29;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;SOL-Kollektorpumpe-Modus (A03);uint16_t;;1;1;;ALL;0;
+SOL.Collector.DT.On;31;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;50;400;SOL-deltaT-Ein Kollektor zu SPunten;uint16_t;K;1;10;####,# K;ALL;0;
+SOL.Collector.DT.Off;32;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;350;SOL-deltaT-Aus Kollektor zu SPunten;uint16_t;K;1;10;####,# K;ALL;0;
+SOL.LoadPump.Percent.Min;35;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;100;1000;SOL-Ladepumpe-PMin VTsek zu SPunten;uint16_t;%;1;10;####,# %;ALL;0;
+SOL.LoadPump.Percent.Max;36;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;100;1000;SOL-Ladepumpe-PMax VTsek zu SPunten;uint16_t;%;1;10;####,# %;ALL;0;
+SOL.EmergencyCooling.Temperature.On;37;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;400;990;SOL-Notkühltemperatur-Ein;uint16_t;°C;1;10;####,#°C;ALL;0;
+SOL.EmergencyCooling.Temperature.Off;38;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;350;950;SOL-Notkühltemperatur-Aus;uint16_t;°C;1;10;####,#°C;ALL;0;
+Cascade.MasterData.0;100;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.1;101;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.2;102;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.3;103;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.4;104;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 4;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.5;105;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 5;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.6;106;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 6;uint16_t;;1;1;#*;ALL;0;
+Cascade.MasterData.7;107;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Master 7;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.0.0;108;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 1 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.0.1;109;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 1 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.0.2;110;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 1 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.0.3;111;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 1 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.1.0;112;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 2 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.1.1;113;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 2 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.1.2;114;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 2 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.1.3;115;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 2 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.2.0;116;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 3 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.2.1;117;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 3 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.2.2;118;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 3 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.2.3;119;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 3 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.3.0;120;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 4 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.3.1;121;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 4 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.3.2;122;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 4 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.3.3;123;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 4 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.4.0;124;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 5 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.4.1;125;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 5 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.4.2;126;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 5 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.4.3;127;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 5 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.5.0;128;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 6 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.5.1;129;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 6 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.5.2;130;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 6 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.5.3;131;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 6 - 3;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.6.0;132;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 7 - 0;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.6.1;133;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 7 - 1;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.6.2;134;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 7 - 2;uint16_t;;1;1;#*;ALL;0;
+Cascade.SlaveData.6.3;135;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;;;Kaskade Slave 7 - 3;uint16_t;;1;1;#*;ALL;0;

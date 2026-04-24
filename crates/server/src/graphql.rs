@@ -772,6 +772,65 @@ impl Mutation {
         Ok(device_type_to_gql(&dt))
     }
 
+    /// Import a Varmeco semicolon-separated CSV (e.g. `vfnova.csv`,
+    /// `exm_compact.csv`) as a fresh device type. Per-row parse errors
+    /// surface as warnings appended to the type's description so the
+    /// user can see what was skipped.
+    async fn import_varmeco_csv(
+        &self,
+        ctx: &Context<'_>,
+        name: String,
+        description: Option<String>,
+        data: String,
+    ) -> Result<DeviceType> {
+        let state = ctx.data_unchecked::<Arc<AppState>>();
+        let parsed = crate::importers::varmeco::parse(&data);
+        if parsed.registers.is_empty() {
+            let summary = parsed
+                .errors
+                .iter()
+                .take(3)
+                .map(|e| format!("line {}: {}", e.line, e.message))
+                .collect::<Vec<_>>()
+                .join("; ");
+            return Err(async_graphql::Error::new(format!(
+                "no registers parsed; {} error(s): {summary}",
+                parsed.errors.len()
+            )));
+        }
+        use std::fmt::Write;
+        let mut desc = description.unwrap_or_default();
+        if !parsed.errors.is_empty() {
+            if !desc.is_empty() {
+                desc.push_str("\n\n");
+            }
+            let _ = write!(
+                desc,
+                "Imported with {} parse warning(s):",
+                parsed.errors.len()
+            );
+            for e in parsed.errors.iter().take(10) {
+                let _ = write!(desc, "\n  line {}: {}", e.line, e.message);
+            }
+            if parsed.errors.len() > 10 {
+                let _ = write!(desc, "\n  …and {} more", parsed.errors.len() - 10);
+            }
+        }
+
+        let dt = CoreDeviceType {
+            id: DeviceTypeId::new(),
+            name: name.trim().to_string(),
+            description: desc,
+            registers: parsed.registers,
+            behavior: CoreBehavior::default(),
+        };
+        let new_id = dt.id;
+        state.world.write().device_types.push(dt.clone());
+        state.save_device_type(new_id)?;
+        state.notify(crate::state::WorldEvent::WorldChanged);
+        Ok(device_type_to_gql(&dt))
+    }
+
     async fn delete_device_type(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
         let state = ctx.data_unchecked::<Arc<AppState>>();
         let tid = DeviceTypeId::from_str(&id.0)?;

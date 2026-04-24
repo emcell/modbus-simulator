@@ -6,6 +6,7 @@ import {
   DeleteRegisterMutation,
   ExportDeviceTypeMutation,
   ImportDeviceTypeMutation,
+  ImportVarmecoCsvMutation,
   RenameDeviceTypeMutation,
   UpdateBehaviorMutation,
   UpsertRegisterMutation,
@@ -103,6 +104,32 @@ export function DeviceTypesPage({
     input.click();
   }, [onRefresh]);
 
+  const importVarmecoCsv = useCallback(async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "text/csv,.csv";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const data = await file.text();
+        // Default the type's name to the file's stem (e.g. `vfnova.csv`
+        // → `vfnova`); the user can rename afterwards in the editor.
+        const stem = file.name.replace(/\.csv$/i, "");
+        const res = await request(ImportVarmecoCsvMutation, {
+          name: stem,
+          description: `Imported from ${file.name}`,
+          data,
+        });
+        setSelectedId(res.importVarmecoCsv.id);
+        await onRefresh();
+      } catch (e) {
+        window.alert(`Varmeco CSV import failed: ${(e as Error).message}`);
+      }
+    };
+    input.click();
+  }, [onRefresh]);
+
   return (
     <div className="stack">
       <div className="panel">
@@ -111,6 +138,12 @@ export function DeviceTypesPage({
           <button onClick={() => void createType()}>+ New</button>
           <button onClick={() => void importType()} title="Import a device type from JSON">
             Import…
+          </button>
+          <button
+            onClick={() => void importVarmecoCsv()}
+            title="Import a Varmeco-format CSV (vfnova.csv, exm_compact.csv, …)"
+          >
+            Import Varmeco CSV…
           </button>
         </div>
         <p className="muted">
@@ -420,6 +453,12 @@ function RegisterEditor({
             <td>
               <select
                 value={draft.dataType}
+                disabled={draft.kind === "COIL" || draft.kind === "DISCRETE"}
+                title={
+                  draft.kind === "COIL" || draft.kind === "DISCRETE"
+                    ? "Coils and discrete inputs are single bits; data type is fixed"
+                    : undefined
+                }
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, dataType: e.target.value as DataType }))
                 }
@@ -432,11 +471,17 @@ function RegisterEditor({
             <td>
               <select
                 value={draft.encoding}
-                disabled={draft.dataType === "STRING"}
+                disabled={
+                  draft.dataType === "STRING" ||
+                  draft.kind === "COIL" ||
+                  draft.kind === "DISCRETE"
+                }
                 title={
-                  draft.dataType === "STRING"
-                    ? "Strings are packed byte-wise; encoding is fixed"
-                    : undefined
+                  draft.kind === "COIL" || draft.kind === "DISCRETE"
+                    ? "Coils and discrete inputs are single bits; encoding is N/A"
+                    : draft.dataType === "STRING"
+                      ? "Strings are packed byte-wise; encoding is fixed"
+                      : undefined
                 }
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, encoding: e.target.value as Encoding }))
@@ -604,6 +649,12 @@ function ExistingRegisterRow({
       <td>
         <select
           value={form.dataType}
+          disabled={form.kind === "COIL" || form.kind === "DISCRETE"}
+          title={
+            form.kind === "COIL" || form.kind === "DISCRETE"
+              ? "Coils and discrete inputs are single bits; data type is fixed"
+              : undefined
+          }
           onChange={(e) => setForm((f) => ({ ...f, dataType: e.target.value as DataType }))}
         >
           {DATA_TYPES.map((t) => (
@@ -614,8 +665,18 @@ function ExistingRegisterRow({
       <td>
         <select
           value={form.encoding}
-          disabled={form.dataType === "STRING"}
-          title={form.dataType === "STRING" ? "Strings are packed byte-wise; encoding is fixed" : undefined}
+          disabled={
+            form.dataType === "STRING" ||
+            form.kind === "COIL" ||
+            form.kind === "DISCRETE"
+          }
+          title={
+            form.kind === "COIL" || form.kind === "DISCRETE"
+              ? "Coils and discrete inputs are single bits; encoding is N/A"
+              : form.dataType === "STRING"
+                ? "Strings are packed byte-wise; encoding is fixed"
+                : undefined
+          }
           onChange={(e) => setForm((f) => ({ ...f, encoding: e.target.value as Encoding }))}
         >
           {ENCODINGS.map((enc) => (

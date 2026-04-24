@@ -214,8 +214,13 @@ test("full UI walkthrough without browser errors", async ({ page }) => {
     await row.locator("select").nth(0).selectOption(kind);
     await row.locator("input").nth(0).fill(address);
     await row.locator("input").nth(1).fill(name);
-    await row.locator("select").nth(1).selectOption(dataType);
-    await row.locator("select").nth(2).selectOption("BIG_ENDIAN");
+    // DataType + Encoding are disabled for bit kinds (coil / discrete
+    // input). Only touch them when the kind carries a word.
+    const isBit = kind === "COIL" || kind === "DISCRETE";
+    if (!isBit) {
+      await row.locator("select").nth(1).selectOption(dataType);
+      await row.locator("select").nth(2).selectOption("BIG_ENDIAN");
+    }
     await row.locator("input").nth(3).fill(defaultValue);
     await row.locator("input").nth(4).fill(description);
     await row.getByRole("button", { name: "+ Add" }).click();

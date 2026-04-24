@@ -1,0 +1,53 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultValue;DefaultExtModbusIndex
+SYS.CollectiveFaultSignal;0;coil;READ_ONLY;0;1;Sammelstörmeldung;uint16_t;;1;1;;ALL;0;0
+SYS.Time.Hour;0;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Systemzeit-Stunde;uint16_t;;1;1;;ALL;12;
+SYS.Time.Minute;1;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Systemzeit-Minute;uint16_t;;1;1;;ALL;0;
+SYS.Time.DayOfWeek;2;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;Systemzeit-Wochentag;uint16_t;;1;1;;ALL;1;
+FWE.Configuration;3;input-register;READ_ONLY;1;6;FWE-Konfiguration (FWE-Typ);uint16_t;;1;1;;SERVICE1;1;
+ZP.Configuration;4;input-register;READ_ONLY;0;2;ZP-Konfiguration;uint16_t;;1;1;;SERVICE1;1;
+SOL.Configuration;5;input-register;READ_ONLY;0;1;SOL-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+THST.Configuration;6;input-register;READ_ONLY;0;1;Schalt-/Thermostatfunktion-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+SYS.Cascade.Configuration;7;input-register;READ_ONLY;0;1;Kaskadenfunktion-Konfiguration;uint16_t;;1;1;;SERVICE1;0;
+SYS.Volume.Sensor.Typ;8;input-register;READ_ONLY;0;2;Volumenstromsensor-Typ;uint16_t;;1;1;;SERVICE1;1;
+HG.Configuration;9;input-register;READ_ONLY;0;1;HG-Konfiguration;uint16_t;;1;1;;SERVICE1;1;
+FWE.Temperature.InletPrimary;12;input-register;READ_ONLY;-270;1005;FWE-Eintrittstemp. / SP-oben (TF02);int16_t;°C;1;10;####,#°C;ALL;700;1
+FWE.Temperature.Outlet;13;input-register;READ_ONLY;-270;1005;FWE-Austrittstemp. (TF01);int16_t;°C;1;10;####,#°C;ALL;450;2
+FWE.Volume;15;input-register;READ_ONLY;0;65535;TWW-Volumenstrom (VSS);uint16_t;l/min;1;10;###,# l/min;ALL;100;3
+FWE.LoadPump;16;input-register;READ_ONLY;0;1000;FWE-Ladepumpe - Leistung (A07);uint16_t;%;1;10;####,# %;ALL;500;4
+FWE.Temperature.InletSecondary;20;input-register;READ_ONLY;-270;1005;FWE-Eintrittstemp. Sekundär (TF07);int16_t;°C;1;10;####,#°C;ALL;300;5
+FWE.Switch;4;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;FWE-Bereitung - Schalter;uint16_t;;1;1;;ALL;1;6
+FWE.TWW.SetPoint;5;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;300;600;FWE-TWW-Solltemperatur;uint16_t;°C;1;10;####,#°C;ALL;500;7
+ZP.Pump.Status;12;coil;READ_ONLY;0;1;ZP-Pumpe-Status (A01);uint16_t;;1;1;;ALL;1;8
+ZP.Switch;16;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP-Schalter;uint16_t;;1;1;;ALL;2;9
+ZP.Pump.Mode;17;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;ZP-Pumpe-Modus;uint16_t;;1;1;;SERVICE1;2;
+ZP.Start.Mode;18;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;ZP-Startmodus;uint16_t;;1;1;;ALL;2;
+ZP.Runtime;19;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;60;ZP-Laufzeit;uint16_t;min;1;1;### min;ALL;3;
+ZP.PauseTime;20;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;60;ZP-Pausenzeit;uint16_t;min;1;1;### min;ALL;30;
+ZP.Stop.Mode;22;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;ZP-Abschalt-Modus;uint16_t;;1;1;;ALL;1;
+ThD.Minutes;24;input-register;READ_ONLY;0;250;ThD-Desinfektionszeit-Ist (abgelaufene Zeit);uint16_t;min;1;1;### min;ALL;0;
+ThD.Minutes.SetPoint;24;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;250;ThD-Desinfektionszeit-Soll (Laufzeit-Vorgabe);uint16_t;min;1;1;### min;ALL;0;
+ThD.FWE.SetPoint;27;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;650;750;ThD-FWE-Solltemperatur (Desinf.temp.);uint16_t;°C;1;10;####,#°C;ALL;0;
+ThD.Storage.SetPoint;25;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;700;950;ThD-Speicher-Solltemperatur (Vorhaltetemp.);uint16_t;°C;1;10;####,#°C;ALL;0;
+ThD.State;26;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;ThD-Ablauf-Zustand;uint16_t;;1;1;;ALL;0;
+THST.Output.State;24;coil;READ_ONLY;0;1;Schalt-/Thermostatfunktion Ausgang-Status (A05);uint16_t;;1;1;;ALL;0;10
+THST.Temperature.TF04;40;input-register;READ_ONLY;-270;1005;Schalt-/Thermostatfunktion Ist-Temp. (TF04);int16_t;°C;1;10;####,#°C;ALL;0;11
+THST.SetPoint;40;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-270;1005;Schalt-/Thermostatfunktion Referenz/Soll-Temp.;int16_t;°C;1;10;####,#°C;ALL;0;12
+THST.DeltaT.Top;41;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;350;Schalt-/Thermostatfunktion deltaT-oben-Wert;uint16_t;K;1;10;####,# K;ALL;0;
+THST.DeltaT.Bottom;42;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;350;Schalt-/Thermostatfunktion deltaT-unten-Wert;uint16_t;K;1;10;####,# K;ALL;0;
+HG.Pump.Status;32;coil;READ_ONLY;0;1;HG1-Pumpe-Status (A04);uint16_t;;1;1;;ALL;0;13
+HG.Mixer.Open.Status;33;coil;READ_ONLY;0;1;HG1-MischerAuf-Status (A02);uint16_t;;1;1;;ALL;0;
+HG.Mixer.Close.Status;34;coil;READ_ONLY;0;1;HG1-MischerZu-Status (A03);uint16_t;;1;1;;ALL;0;
+HG.Ambient.Temperature;30;input-register;READ_ONLY;-270;1050;HG-Aussentemperatur (TF06);int16_t;°C;1;10;####,# °C;ALL;0;14
+HG.Flow.Temperature;31;input-register;READ_ONLY;-270;1005;HG1-Vorlauftemperatur (TF03);int16_t;°C;1;10;####,#°C;ALL;0;15
+HG.Flow.SetPoint;33;input-register;READ_ONLY;0;65535;HG1-Vorlauf-Solltemperatur;uint16_t;°C;1;10;####,#°C;ALL;0;16
+HG.Pump.Mode;60;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;HG1-Pumpe-Modus (A04);uint16_t;;1;1;;ALL;0;
+HG.Mixer.Open.Mode;61;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;HG1-MischerAuf-Modus (A02);uint16_t;;1;1;;ALL;0;
+HG.Mixer.Close.Mode;62;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;HG1-MischerZu-Modus (A03);uint16_t;;1;1;;ALL;0;
+HG.Switch;63;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;HG1-Betriebsschalter;uint16_t;;1;1;;ALL;0;17
+HG.HeatCurve.Slope;64;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;30;HG1-Heizkurve-Steigung;uint16_t;K;1;10;####,# K;ALL;0;
+HG.HeatCurve.ParallelShift;65;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;40;HG1-Heizkurve-Parallelverschiebung;uint16_t;K;1;10;####,# K;ALL;0;
+HG.HeatCurve.MinTemp;66;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;65535;HG1-Heizkurve-Minimaltemperatur;uint16_t;°C;1;10;####,#°C;ALL;0;
+HG.HeatCurve.MaxTemp;67;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;65535;HG1-Heizkurve-Maximaltemperatur;uint16_t;°C;1;10;####,#°C;ALL;0;
+HG.Flow.SetPoint.Shift;68;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-200;200;HG1-VTsoll-Verschiebung;int16_t;K;1;10;####,# K;ALL;0;
+HG.Stop.AmbientTemperature;69;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;50;350;HG1-Abschalt-Aussentemperatur;uint16_t;°C;1;10;####,#°C;ALL;0;
+HG.Mixer.PerformanceSlope;71;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;30;HG1-Mischer Leistungsanstieg;uint16_t;%/K;1;10;####,# %/K;SERVICE1;0;

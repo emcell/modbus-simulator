@@ -1,0 +1,34 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultExtModbusIndex
+SYS.CollectiveFaultSignal;0;holding-register;READ_ONLY;0;1;Sammelstörmeldung;uint16_t;;1;1;;ALL;0
+WQ0.modWq_BoilerTemp;600;holding-register;READ_ONLY;0;1200;WQ1-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;1
+WQ0.modWq_ReCircTemp;601;holding-register;READ_ONLY;0;1200;WQ1-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;2
+WQ0.modWq_OpTNom;602;holding-register;READ_ONLY;0;1200;WQ1-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;3
+WQ0.modWq_EnableStatus;613;holding-register;READ_ONLY;0;1;WQ1-Anforderung;uint16_t;;1;1;;ALL;4
+WQ1.modWq_BoilerTemp;650;holding-register;READ_ONLY;0;1200;WQ2-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;5
+WQ1.modWq_ReCircTemp;651;holding-register;READ_ONLY;0;1200;WQ2-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;6
+WQ1.modWq_OpTNom;652;holding-register;READ_ONLY;0;1200;WQ2-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;7
+WQ1.modWq_EnableStatus;663;holding-register;READ_ONLY;0;1;WQ2-Anforderung;uint16_t;;1;1;;ALL;8
+WQ2.modWq_BoilerTemp;700;holding-register;READ_ONLY;0;1200;WQ3-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;9
+WQ2.modWq_ReCircTemp;701;holding-register;READ_ONLY;0;1200;WQ3-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;10
+WQ2.modWq_OpTNom;702;holding-register;READ_ONLY;0;1200;WQ3-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;11
+WQ2.modWq_EnableStatus;713;holding-register;READ_ONLY;0;1;WQ3-Anforderung;uint16_t;;1;1;;ALL;12
+WQ3.modWq_BoilerTemp;750;holding-register;READ_ONLY;0;1200;WQ4-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;13
+WQ3.modWq_ReCircTemp;751;holding-register;READ_ONLY;0;1200;WQ4-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;14
+WQ3.modWq_OpTNom;752;holding-register;READ_ONLY;0;1200;WQ4-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;15
+WQ3.modWq_EnableStatus;763;holding-register;READ_ONLY;0;1;WQ4-Anforderung;uint16_t;;1;1;;ALL;16
+WQ4.modWq_BoilerTemp;19000;holding-register;READ_ONLY;0;1200;WQ5-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;17
+WQ4.modWq_ReCircTemp;19001;holding-register;READ_ONLY;0;1200;WQ5-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;18
+WQ4.modWq_OpTNom;19002;holding-register;READ_ONLY;0;1200;WQ5-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;19
+WQ4.modWq_EnableStatus;19013;holding-register;READ_ONLY;0;1;WQ5-Anforderung;uint16_t;;1;1;;ALL;20
+WQ5.modWq_BoilerTemp;19050;holding-register;READ_ONLY;0;1200;WQ6-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;21
+WQ5.modWq_ReCircTemp;19051;holding-register;READ_ONLY;0;1200;WQ6-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;22
+WQ5.modWq_OpTNom;19052;holding-register;READ_ONLY;0;1200;WQ6-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;23
+WQ5.modWq_EnableStatus;19063;holding-register;READ_ONLY;0;1;WQ6-Anforderung;uint16_t;;1;1;;ALL;24
+WQ6.modWq_BoilerTemp;19100;holding-register;READ_ONLY;0;1200;WQ7-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;25
+WQ6.modWq_ReCircTemp;19101;holding-register;READ_ONLY;0;1200;WQ7-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;26
+WQ6.modWq_OpTNom;19102;holding-register;READ_ONLY;0;1200;WQ7-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;27
+WQ6.modWq_EnableStatus;19113;holding-register;READ_ONLY;0;1;WQ7-Anforderung;uint16_t;;1;1;;ALL;28
+WQ7.modWq_BoilerTemp;19500;holding-register;READ_ONLY;0;1200;WQ8-Vorlauf/Kessel-Temperatur;uint16_t;;1;10;####,# °C;ALL;29
+WQ7.modWq_ReCircTemp;19501;holding-register;READ_ONLY;0;1200;WQ8-Rücklauf-Temperatur;uint16_t;;1;10;####,# °C;ALL;30
+WQ7.modWq_OpTNom;19502;holding-register;READ_ONLY;0;1200;WQ8-Kessel-Temperatur-Soll;uint16_t;;1;10;####,# °C;ALL;31
+WQ7.modWq_EnableStatus;19513;holding-register;READ_ONLY;0;1;WQ8-Anforderung;uint16_t;;1;1;;ALL;32

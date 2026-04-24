@@ -1,0 +1,189 @@
+Id;Register;Type;ValueHandling;Min;Max;Name;ValueType;Format;Multiplicator;Divisor;DigiVisuFormat;SecurityLevel;DefaultValue;DefaultExtModbusIndex
+SYS.CollectiveFault;0;input-register;READ_ONLY;0;65535;Sammelstörung-Bitfeld;uint16_t;;1;1;;ALL;;1
+SYS.CollectiveWarning;1;input-register;READ_ONLY;0;65535;Sammelwarnung-Bitfeld;uint16_t;;1;1;;ALL;;2
+SYS.CollectiveMessage;2;input-register;READ_ONLY;0;65535;Sammelmeldung-Bitfeld;uint16_t;;1;1;;ALL;;3
+SYS.Config.TfOffset;3;input-register;READ_ONLY;-30;30;SYS-Konfiguration TF-Offset;int16_t;°C;1;10;####,# °C;SERVICE1;;
+SYS.Config.Modbus;4;input-register;READ_ONLY;0;1;SYS-Konfiguration Modbus;uint16_t;;1;1;#;SERVICE1;;
+SYS.Config.Modbus2;5;input-register;READ_ONLY;0;1;SYS-Konfiguration Modbus2-Extension;uint16_t;;1;1;#;SERVICE1;;
+EXM.Status.DE.ReleaseExtern;10;input-register;READ_ONLY;0;1;Signal Freigabe von extern;uint16_t;;1;1;;ALL;;
+EXM.Status.DE.HighPressure;11;input-register;READ_ONLY;0;1;Störung eXm Hochdruck;uint16_t;;1;1;;ALL;;4
+EXM.Status.DE.LowPressure;12;input-register;READ_ONLY;0;1;Störung eXm Niederdruck;uint16_t;;1;1;;ALL;;5
+EXM.Status.DE.CompressorFault;13;input-register;READ_ONLY;0;1;Störung eXm Kompressor Motorschutz;uint16_t;;1;1;;ALL;;6
+EXM.Status.DE.CompressorOverheat;14;input-register;READ_ONLY;0;1;Störung eXm Kompressor Überhitzung;uint16_t;;1;1;;ALL;;7
+EXM.Status.DA.CollectiveFault;15;input-register;READ_ONLY;0;1;(DA) Sammelstörmeldung;uint16_t;;1;1;;ALL;;8
+EXM.Status.DA.Release;16;input-register;READ_ONLY;0;1;(DA) Kompressor Freigabe;uint16_t;;1;1;;ALL;;9
+EXM.Status.HT.Temp.SP.HTTOP;17;input-register;READ_ONLY;-270;1005;HT-Speicher Isttemp. oben;int16_t;°C;1;10;###,# °C;ALL;;10
+EXM.Status.NT.Temp.SP.NTBOT;18;input-register;READ_ONLY;-270;1005;NT-Speicher Isttemp. unten;int16_t;°C;1;10;###,# °C;ALL;;11
+EXM.Status.HT.Temp.IN;19;input-register;READ_ONLY;-270;1005;HT-Eintritt Isttemp.;int16_t;°C;1;10;###,# °C;ALL;;12
+EXM.Status.HT.Temp.OUT;20;input-register;READ_ONLY;-270;1005;HT-Austritt Isttemp.;int16_t;°C;1;10;###,# °C;ALL;;13
+EXM.Status.HT.Velocity;21;input-register;READ_ONLY;0;1000;HT-Kreis Volumenstrom;uint16_t;l/min;1;10;###,# l/min;ALL;;14
+EXM.Status.NT.Temp.IN;22;input-register;READ_ONLY;-270;1005;NT-Eintritt Isttemp.;int16_t;°C;1;10;###,# °C;ALL;;15
+EXM.Status.NT.Temp.OUT;23;input-register;READ_ONLY;-270;1005;NT-Austritt Isttemp.;int16_t;°C;1;10;###,# °C;ALL;;16
+EXM.Status.NT.Velocity;24;input-register;READ_ONLY;0;1000;NT-Kreis Volumenstrom;uint16_t;l/min;1;10;###,# l/min;ALL;;17
+EXM.Status.HT.AustrittSoll;25;input-register;READ_ONLY;-270;1005;HT-Austritt Soll/Max-Temp.;int16_t;°C;1;10;###,# °C;ALL;;
+EXM.Status.HT.AustrittSollEffektiv;26;input-register;READ_ONLY;-270;1005;HT-Austritt Soll/Max-Temp. effektiv;int16_t;°C;1;10;###,# °C;ALL;;18
+EXM.Status.HT.Pump.Power;27;input-register;READ_ONLY;0;100;HT-Kreis Pumpenleistung insgesamt;uint16_t;%;1;1;### %;ALL;;19
+EXM.Status.HT.ThrValve.PrcntActual;28;input-register;READ_ONLY;0;100;HT-Kreis Drosselventil Öffnungsgrad aktuell;uint16_t;%;1;1;### %;ALL;;20
+EXM.Status.NT.AustrittSoll;29;input-register;READ_ONLY;-270;1005;NT-Austritt Soll/Min-Temp.;int16_t;°C;1;10;###,# °C;ALL;;
+EXM.Status.NT.AustrittSollEffektiv;30;input-register;READ_ONLY;-270;1005;NT-Austritt Soll/Min-Temp. effektiv;int16_t;°C;1;10;###,# °C;ALL;;21
+EXM.Status.NT.Pump.Power;31;input-register;READ_ONLY;0;100;NT-Kreis Pumpenleistung insgesamt;uint16_t;%;1;1;### %;ALL;;22
+EXM.Status.HT.Power;32;input-register;READ_ONLY;0;10000;HT-Kreis aktuelle Leistung;uint16_t;W;1;1;##### W;ALL;;23
+EXM.Status.NT.Power;33;input-register;READ_ONLY;0;10000;NT-Kreis aktuelle Leistung;uint16_t;W;1;1;##### W;ALL;;24
+EXM.Status.COP;34;input-register;READ_ONLY;0;99;aktueller COP-Wert;uint16_t;;1;100;##,##;ALL;;25
+EXM.Status.Pel;35;input-register;READ_ONLY;0;10000;aktuelle elektrische Leistungsaufnahme;uint16_t;W;1;1;###### W;ALL;;26
+EXM.Status.OpTime.Hours.Hi;36;input-register;READ_ONLY;0;999;Gesamt-Laufzeit-Stunden (Zehntausend);uint16_t;h;1;1;###;ALL;;27
+EXM.Status.OpTime.Hours.Lo;37;input-register;READ_ONLY;0;9999;Gesamt-Laufzeit-Stunden;uint16_t;h;1;1;####;ALL;;28
+EXM.Status.OpTime.Min;38;input-register;READ_ONLY;0;9999;Gesamt-Laufzeit-Minuten;uint16_t;h;1;1;####;ALL;;29
+EXM.Status.OpStarts.Hi;39;input-register;READ_ONLY;0;9999;Gesamt-Startanzahl (Zehntausend);uint16_t;;1;1;#*;ALL;;30
+EXM.Status.OpStarts.Lo;40;input-register;READ_ONLY;0;9999;Gesamt-Startanzahl;uint16_t;;1;1;#*;ALL;;31
+EXM.Status.HT.Pump.P;50;input-register;READ_ONLY;0;100;HT-Kreis Pumpenleistung P-Anteil;uint16_t;%;1;1;### %;ALL;;
+EXM.Status.HT.Pump.I;51;input-register;READ_ONLY;0;100;HT-Kreis Pumpenleistung I-Anteil;int16_t;%;1;1;#### %;ALL;;
+EXM.Status.HT.Pump.PWMon;52;input-register;READ_ONLY;0;1023;HT-Kreis Pumpenleistung PWM Zeit An;uint16_t;;1;1;;ALL;;
+EXM.Status.NT.Pump.P;53;input-register;READ_ONLY;0;100;NT-Kreis Pumpenleistung P-Anteil;uint16_t;%;1;1;### %;ALL;;
+EXM.Status.NT.Pump.I;54;input-register;READ_ONLY;0;100;NT-Kreis Pumpenleistung I-Anteil;int16_t;%;1;1;#### %;ALL;;
+EXM.Status.NT.Pump.PWMon;55;input-register;READ_ONLY;0;1023;NT-Kreis Pumpenleistung PWM Zeit An;uint16_t;;1;1;;ALL;;
+EXM.Status.HT.ThrValve.StateE1;56;input-register;READ_ONLY;0;3;HT-Kreis Drosselventil Zustand-Statemachine Ebene1;uint16_t;;1;1;#;ALL;;
+EXM.Status.HT.ThrValve.StateE2;57;input-register;READ_ONLY;0;9;HT-Kreis Drosselventil Zustand-Statemachine Ebene2;uint16_t;;1;1;#;ALL;;
+EXM.Status.HT.ThrValve.StateE3;58;input-register;READ_ONLY;0;9;HT-Kreis Drosselventil Zustand-Statemachine Ebene3;uint16_t;;1;1;#;ALL;;
+EXM.Status.HT.ThrValve.TactOn;59;input-register;READ_ONLY;0;100;HT-Kreis Drosselventil Ein-Taktzeit (ungedr. in gedr.);uint16_t;s;1;1;#*;ALL;;
+EXM.Status.HT.ThrValve.TactOff;60;input-register;READ_ONLY;0;100;HT-Kreis Drosselventil Aus-Taktzeit (ungedr. in gedr.);uint16_t;s;1;1;#*;ALL;;
+EXM.Status.Carel.Valve.PosSteps;61;input-register;READ_ONLY;0;999;Carel-EVD Ventilöffnung-Postion Steps;uint16_t;;1;1;###;ALL;;
+EXM.Status.Carel.Valve.PosRel;62;input-register;READ_ONLY;0;100;Carel-EVD Ventilöffnung-Postion relativ;uint16_t;%;1;1;### %;ALL;;43
+EXM.Status.Carel.Temp.Evaporation;63;input-register;READ_ONLY;0;65535;Carel-EVD Verdampfungstemperatur;uint16_t;°C;1;10;####,# °C;ALL;;44
+EXM.Status.Carel.Temp.Overheat;64;input-register;READ_ONLY;0;65535;Carel-EVD Überhitzung;int16_t;K;1;10;#####,# K;ALL;;45
+SYS.Time.Hour;0;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Systemzeit-Stunde;uint16_t;;1;1;##;ALL;12;
+SYS.Time.Minute;1;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Systemzeit-Minute;uint16_t;;1;1;##;ALL;0;
+SYS.Time.Year;2;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;99;Systemdatum-Jahr;uint16_t;;1;1;##;ALL;2021;
+SYS.Time.Month;3;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;12;Systemdatum-Monat;uint16_t;;1;1;##;ALL;9;
+SYS.Time.Day;4;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;31;Systemdatum-Tag;uint16_t;;1;1;##;ALL;23;
+SYS.Time.DaylightSaving;5;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Systemdatum/zeit-DaylightSavingTime;uint16_t;;1;1;#;ALL;1;
+SYS.Config.AntiLock.Switch;6;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;SYS-Konf. Antiblockierfunktion-Schalter;uint16_t;;1;1;#;SERVICE1;1;
+SYS.Config.AntiLock.HourOfDay;7;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;SYS-Konf. Antiblockierfunktion-Uhrzeit;uint16_t;;1;1;##;SERVICE1;2;
+SYS.Config.Modbus.SlaveId;8;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;128;SYS-Konf. Modbus-Slaveadresse;uint16_t;;1;1;###;SERVICE1;1;
+SYS.Config.Modbus2.Id;9;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;128;SYS-Konf. Modbus2-Adresse;uint16_t;;1;1;###;SERVICE1;0;
+SYS.Config.Language;10;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;SYS-Konf. Sprache;uint16_t;;1;1;#;SERVICE1;0;
+SYS.Config.FactoryDefaults;11;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;123;123;SYS-Konf. Reset auf Werkseinstellung;uint16_t;;1;1;###;ADMIN;0;
+EXM.Config.HardwareType;20;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;eXm-Konfiguration (eXm-Type);uint16_t;;1;1;;ALL;0;
+EXM.Config.OperatingType;21;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;eXm-Betriebsart;uint16_t;;1;1;;ALL;0;32
+EXM.Config.PowerSwitch;22;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;eXm-Betrieb (Hauptschalter);uint16_t;;1;1;;ALL;;33
+EXM.Config.HydraulikSchema;23;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Hydraulik-Schema;uint16_t;;1;1;;ALL;;
+EXM.Config.COP.Intervall;24;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;60;Leistung- u. COP Mittelwertbildung ueber;uint16_t;s;1;1;## s;ALL;;
+EXM.Status.OpTiStarts.Reset;25;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;123;123;Betriebstd.-/Start-Zähler Reset;uint16_t;;1;1;###;ADMIN;0;
+EXM.Config.HT.Tu;26;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;400;860;HT-Speicher kälteste Temp.;uint16_t;°C;1;10;###,# °C;ALL;620;
+EXM.Config.HT.To;27;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;410;870;HT-Speicher soll/wärmste Temp.;uint16_t;°C;1;10;###,# °C;ALL;650;
+EXM.Config.HT.Hysterese;28;holding-register;READ_ONLY;10;300;HT-Speicher Hysterese-Temp.;uint16_t;K;1;10;##,# K;ALL;;
+EXM.Config.NT.Tu;29;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;60;390;NT-Speicher soll/kühlste Temp.;uint16_t;°C;1;10;##,# °C;ALL;220;
+EXM.Config.NT.To;30;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;70;400;NT-Speicher wärmste Temp.;uint16_t;°C;1;10;##,# °C;ALL;250;
+EXM.Config.NT.Hysterese;31;holding-register;READ_ONLY;-300;-10;NT-Speicher Hysterese-Temp.;int16_t;K;1;10;###,# K;ALL;;
+EXM.Config.Mindestpausenzeit;32;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;120;Mindestpausenzeit;uint16_t;min;1;1;### min;ALL;1;
+EXM.Config.Mindestlaufzeit;33;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;120;Mindestlaufzeit;uint16_t;min;1;1;### min;ALL;1;
+EXM.Config.HTSP.TNomShift;34;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-210;200;HT-Speicher Solltemp.-Verschiebung aktuell;int16_t;K;1;10;###,# K;ALL;0;
+EXM.Config.Pumpenvorlauf.Leistung;35;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;100;Pumpenvorlauf Leistung P;uint16_t;%;1;1;### %;ALL;100;
+EXM.Config.Pumpenvorlauf.Zeit;36;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;180;Pumpenvorlauf Zeit t;uint16_t;s;1;1;### s;ALL;10;
+EXM.Config.Pumpennachlauf.Leistung;37;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Pumpennachlauf Modus M;uint16_t;;1;1;#;ALL;1;
+EXM.Config.Pumpennachlauf.Zeit;38;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;180;Pumpennachlauf Zeit t;uint16_t;s;1;1;#### s;ALL;10;
+EXM.Config.HT.TempÜberhöhung;50;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;300;HT-Austritt Soll-Temperatur-Überhöhung;uint16_t;K;1;10;##,# K;ALL;30;
+EXM.Config.HT.DeltaTmax;51;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;700;HT-DeltaT-Max/Soll (HT-Austr.-SollEff. zu HT-Eintr.);uint16_t;K;1;10;##,# K;ALL;300;
+EXM.Config.HT.DeltaTmin;52;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;30;300;HT-DeltaT-Min (HT-Eintr. zu HT-Austr.-Soll);uint16_t;K;1;10;##,# K;ALL;50;
+EXM.Config.HT.Pmin.dTu.Pmin;53;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;70;HT-Austritt P-Regler: Min.-Pumpenleistung unterh./im NiedrigTemp-Arbeitspunkt;uint16_t;%;1;1;### %;ALL;10;
+EXM.Config.HT.Pmin.dTu;54;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-300;0;HT-Austritt P-Regler: Temp.diff. zur Austr.-Solltemp. im NiedrigTemp-Arbeitspunkt;int16_t;K;1;10;####,# K;ALL;-70;
+EXM.Config.HT.Pmax.dTo.Pmax;55;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;8;100;HT-Austritt P-Regler: Max.-Pumpenleistung im/oberh. HochTemp-Arbeitspunkt;uint16_t;%;1;1;### %;ALL;100;
+EXM.Config.HT.Pmax.dTo;56;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;300;HT-Austritt P-Regler: Temp.diff. zur Austr.-Solltemp. im HochTemp-Arbeitspunkt;int16_t;K;1;10;####,# K;ALL;50;
+EXM.Config.ZykluszeitIregler;57;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;20;HT-Austritt I-Regler: Zykluszeit Abarbeitung;uint16_t;s;1;1;## s;ALL;1;
+EXM.Config.VerstärkungsfaktorKi;58;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-60;0;HT-Austritt I-Regler: Verstärkungsfaktor Ki;int16_t;%/K;1;10;####,# %/K;ALL;-15;
+EXM.Config.IntegrationszeitTi;59;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;5;120;HT-Austritt I-Regler: Integrationszeit Ti;uint16_t;s;1;1;### s;ALL;30;
+EXM.Config.SättigungsgrenzeNegativ;60;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-100;0;HT-Austritt I-Regler: Sättigungsgrenze negativ;int16_t;%;1;1;#### %;ALL;-75;
+EXM.Config.SättigungsgrenzePositiv;61;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;HT-Austritt I-Regler: Sättigungsgrenze positiv;uint16_t;%;1;1;### %;ALL;50;
+EXM.Config.HT.ThrValve.TiMin;62;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;240;HT-Drosselventil Mindest-Laufzeit von 0-100%;uint16_t;s;1;1;### s;ALL;72;
+EXM.Config.HT.ThrValve.TiSetClose;63;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;900;HT-Drosselventil Soll-Laufzeit in gedrosselt;uint16_t;s;1;1;### s;ALL;180;
+EXM.Config.HT.ThrValve.MinOpenClosed;64;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;5;100;HT-Drosselventil Mindestoeffnungsgrad wenn gedrosselt;uint16_t;%;1;1;### %;ALL;100;
+EXM.Config.HT.ThrValve.Reduced.dT;65;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;30;HT-Drosselv. deltaT HT-Austr. unter HT-Austr.SollEff;uint16_t;K;1;1;## K;ALL;5;
+EXM.Config.HT.ThrValve.Reduced.Delay;66;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;30;HT-Drosselv. Zeitverzög. HT-Austr. unter HT-Austr.SollEff;uint16_t;K;1;1;## Min;ALL;5;
+EXM.Config.HT.ThrValve.Unreduced.dT;67;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;3;30;HT-Drosselv. deltaT HT-Austr. über HT-Austr.SollEff;uint16_t;K;1;1;## K;ALL;5;
+EXM.Config.HT.ThrValve.Unreduced.Delay;68;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;240;HT-Drosselv. Zeitverzög. HT-Austr. über HT-Austr.SollEff;uint16_t;s;1;1;### s;ALL;60;
+EXM.Config.NT.Tout.MinTemp;80;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;500;niedrigste zugelassene NTKreis-Austrittstemp.;uint16_t;°C;1;10;##,# °C;ALL;100;
+EXM.Config.NT.Tout.MinTemp.Hyst;81;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;10;100;niedrigste zugelassene NTKreis-Austrittstemp. (Hysterese);uint16_t;K;1;10;##,# K;ALL;30;
+EXM.Config.NT.DeltaTSollNtAustrittZuEintritt;82;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-700;-10;NT-DeltaT-Max/Soll (NT-Austr.SollEff. zu NT-Eintr.);int16_t;K;1;10;####,# K;ALL;-70;
+EXM.Config.NT.AustrittSollTemperaturVerringerung;83;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-400;0;NT-Austritt Soll-Temperatur-Verringerung;int16_t;K;1;10;####,# K;ALL;-30;
+EXM.Config.NT.DeltaTmin;84;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-300;-20;NT-DeltaT-Min (NT-Eintr. zu NT-Austr.Soll);int16_t;K;1;10;###,# K;ALL;-50;
+EXM.Config.NT.P.PminAustrittsSolltemp+ObereDiff.Pmin;85;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;NT-Austritt P-Regler: Min.-Pumpenleistung oberh./im HochTemp-Arbeitspunkt;uint16_t;%;1;1;### %;ALL;10;
+EXM.Config.NT.P.PminAustrittsSolltemp+ObereDiff.dTo;86;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;300;NT-Austritt P-Regler: Temp.diff. zur Austr.-Solltemp. im HochTemp-Arbeitspunkt;uint16_t;K;1;10;##,# K;ALL;70;
+EXM.Config.NT.P.PminAustrittsSolltemp-ObereDiff.PMax;87;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;NT-Austritt P-Regler: Max.-Pumpenleistung im/unterh. NiedrigTemp-Arbeitspunkt;uint16_t;%;1;1;### %;ALL;100;
+EXM.Config.NT.P.PminAustrittsSolltemp-ObereDiff.dTu;88;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-300;0;NT-Austritt P-Regler: Temp.diff. zur Austr.-Solltemp. im NiedrigTemp-Arbeitspunkt;int16_t;K;1;10;###,# K;ALL;-50;
+EXM.Config.NT.I.Zykluszeit;89;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;20;HT-Austritt I-Regler: Zykluszeit Abarbeitung;uint16_t;s;1;1;## s;ALL;1;
+EXM.Config.NT.KI.Verstärkungsfaktor;90;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;NT-Austritt I-Regler: Verstärkungsfaktor Ki;int16_t;%/K;1;10;###,# %/K;ALL;15;
+EXM.Config.NT.I.Integrationszeit;91;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;5;120;NT-Austritt I-Regler: Integrationszeit Ti;int16_t;s;1;1;### s;ALL;30;
+EXM.Config.NT.I.Sättiungsgrenze.negativ;92;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-100;0;NT-Austritt I-Regler: Sättigungsgrenze negativ;int16_t;%;1;1;#### %;ALL;-75;
+EXM.Config.NT.I.Sättiungsgrenze.positiv;93;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;NT-Austritt I-Regler: Sättigungsgrenze positiv;uint16_t;%;1;1;### %;ALL;50;
+EXM.Config.Carel.Valve.ManuellActive;94;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Carel-EVD manuelle Ventilöffnung aktiv;uint16_t;;1;1;#;ALL;;
+EXM.Config.Carel.Valve.ManuellPosRelativ;95;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;Carel-EVD manuelle Ventilöffnung-Postion Relativ;uint16_t;;1;1;### %;ALL;;
+EXM.Config.Carel.Valve.PosAtStart;96;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;Carel-EVD Ventilöffnung bei Start relativ;uint16_t;%;1;1;### %;ALL;;
+EXM.Config.Carel.Temp.LimitEvaporation;97;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2000;Carel-EVD Schwelle hohe Verdampfungstemperatur;uint16_t;°C;1;10;####,# °C;ALL;;
+EXM.Config.Carel.Temp.OverheatNom;98;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;550;Carel-EVD Überhitzung Sollwert;uint16_t;K;1;10;####,# K;ALL;;
+SYS.TF.01.Mode;100;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF01-Modus HT-Speicher oben;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.01.Value;101;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF01-Temp. HT-Speicher oben;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.TF.02.Mode;102;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF02-Modus NT-Speicher unten;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.02.Value;103;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF02-Temp. NT-Speicher unten;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.TF.03.Mode;104;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF03-Modus eXm HT-Eintritt;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.03.Value;105;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF03-Temp. eXm HT-Eintritt;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.TF.04.Mode;106;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF04-Modus eXm HT-Austritt;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.04.Value;107;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF04-Temp. eXm HT-Austritt;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.TF.05.Mode;108;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF05-Modus eXm NT-Eintritt;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.05.Value;109;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF05-Temp. eXm NT-Eintritt;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.TF.06.Mode;110;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;TF06-Modus eXm NT-Austritt;uint16_t;;1;1;#;SERVICE1;0;
+SYS.TF.06.Value;111;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-500;1000;TF06-Temp. eXm NT-Austritt;int16_t;°C;1;10;####,# °C;SERVICE1;450;
+SYS.DI.01.Mode;112;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE01-Modus Freigabe von extern;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.01.Value;113;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE01-Wert Freigabe von extern;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.02.Mode;114;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE02-Modus eXm Hochdruck;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.02.Value;115;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE02-Wert eXm Hochdruck;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.03.Mode;116;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE03-Modus eXm Niederdruck;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.03.Value;117;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE03-Wert eXm Niederdruck;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.04.Mode;118;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE04-Modus Kompressor Motorschutz;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.04.Value;119;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE04-Wert Kompressor Motorschutz;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.05.Mode;120;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE05-Modus Kompressor Überhitzung;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DI.05.Value;121;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;DE05-Wert Kompressor Überhitzung;uint16_t;;1;1;#;SERVICE1;0;
+SYS.DA.01.Mode;122;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A01-Modus Drosselventil Auf;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.02.Mode;123;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A02-Modus Drosselventil Zu;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.03.Mode;124;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A03-Modus;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.04.Mode;125;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A04-Modus;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.05.Mode;126;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A05-Modus Sammelstörmeldung;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.06.Mode;127;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A06-Modus Kompressor Freigabe;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.07.Mode;128;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A07-Modus-PWM HT-Pumpe;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.07.PWMRelRatio;129;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;A07-Ratio-PWM HT-Pumpe;uint16_t;%;1;1;### %;SERVICE1;100;
+SYS.DA.08.Mode;130;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;2;A08-Modus-PWM NT-Pumpe;uint16_t;;1;1;#;SERVICE1;2;
+SYS.DA.08.PWMRelRatio;131;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;100;A08-Ratio-PWM NT-Pumpe;uint16_t;%;1;1;### %;ALL;100;
+SYS.WP.Edit.FMSelect;140;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Wochenprg. Edit-Auswahl (1=HT-SPsoll-Versch.);uint16_t;;1;1;;ADMIN;1;
+SYS.WP.Edit.Day;141;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;Wochenprg. Edit-Tag (0=SO);uint16_t;;1;1;;ADMIN;0;
+SYS.WP.Edit.Point;142;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;1;6;Wochenprg. Edit-Schaltpunkt;uint16_t;;1;1;;ADMIN;1;
+SYS.WP.Edit.Hour;143;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;23;Wochenprg. Edit-Stunde;uint16_t;;1;1;;ADMIN;0;
+SYS.WP.Edit.Minute;144;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;59;Wochenprg. Edit-Minute;uint16_t;;1;1;;ADMIN;0;
+SYS.WP.Edit.Value;145;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;-32768;32767;Wochenprg. Edit-Wert;int16_t;;1;1;;ADMIN;0;
+SYS.WP.Copy.FromDay;146;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;Wochenprg. Copy-von-Tag;uint16_t;;1;1;;ADMIN;0;
+SYS.WP.Copy.ToDay;147;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;6;Wochenprg. Copy-auf-Tag;uint16_t;;1;1;;ADMIN;0;
+SYS.WP.Copy.Switch;148;holding-register;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;Wochenprg. Copy-Schalter (1=kopieren);uint16_t;;1;1;;ADMIN;0;
+SYS.CollectiveFaultSignal;0;coil;READ_ONLY;0;1;Sammelstörmeldung;uint16_t;;1;1;;ALL;;0
+SYS.Update;1;coil;ON_CONFLICT_SLAVE_HAS_PRIORITY;0;1;System-Reset;uint16_t;;1;1;;ADMIN;;
+EXM.Status.Coil.HTSPBedarf;5;coil;READ_ONLY;0;1;Heizbedarf im HT-SP-Bereich;uint16_t;;1;1;;ALL;;34
+EXM.Status.Coil.NTSPBedarf;6;coil;READ_ONLY;0;1;Kühlbedarf im NT-SP-Bereich;uint16_t;;1;1;;ALL;;35
+EXM.Status.Coil.StartFreigegeben;7;coil;READ_ONLY;0;1;eXm betriebsbereit;uint16_t;;1;1;;ALL;;36
+EXM.Status.Coil.ExternAngefordert;8;coil;READ_ONLY;0;1;eXm externe Freigabe aktiv;uint16_t;;1;1;;ALL;;37
+EXM.Status.Coil.Aktiv;9;coil;READ_ONLY;0;1;eXm aktiv;uint16_t;;1;1;;ALL;;38
+EXM.Status.Coil.HTPumpeAktiv;10;coil;READ_ONLY;0;1;HT-Pumpe angesteuert;uint16_t;;1;1;;ALL;;
+EXM.Status.Coil.NTPumpeAktiv;11;coil;READ_ONLY;0;1;NT-Pumpe angesteuert;uint16_t;;1;1;;ALL;;
+EXM.Status.Coil.NTAustrittUnterMinTemp;12;coil;READ_ONLY;0;1;NT-Austritt unter Mindesttemperatur;uint16_t;;1;1;;ALL;;
+EXM.Status.Coil.MinLaufzeitAktiv;13;coil;READ_ONLY;0;1;Mindestlaufzeit aktiv;uint16_t;;1;1;;ALL;;39
+EXM.Status.Coil.MinPausenzeitAktiv;14;coil;READ_ONLY;0;1;Mindestpausenzeit aktiv;uint16_t;;1;1;;ALL;;40
+EXM.Status.Coil.HT.FlussErkannt;15;coil;READ_ONLY;0;1;HT-Kreis durchströmt;uint16_t;;1;1;;ALL;;41
+EXM.Status.Coil.NT.FlussErkannt;16;coil;READ_ONLY;0;1;NT-Kreis durchströmt;uint16_t;;1;1;;ALL;;42
+EXM.Status.Carel.Alarm.LowSuctionTemp;17;coil;READ_ONLY;0;1;Carel-EVD Alarm niedrige Saugtemperatur;uint16_t;;1;1;;ALL;;
+EXM.Status.Carel.Alarm.S1Input;18;coil;READ_ONLY;0;1;Carel-EVD Alarm S1-Eingang;uint16_t;;1;1;;ALL;;
+EXM.Status.Carel.Alarm.S2Input;19;coil;READ_ONLY;0;1;Carel-EVD Alarm S2-Eingang;uint16_t;;1;1;;ALL;;
+EXM.Status.Carel.Alarm.EvaporationHi;20;coil;READ_ONLY;0;1;Carel-EVD Alarm hohe Verdampfungstemperatur;uint16_t;;1;1;;ALL;;
+SYS.FIRMWARE.0;200;input-register;READ_ONLY;0;65535;Firmware byte 1-2;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.1;201;input-register;READ_ONLY;0;65535;Firmware byte 3-4;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.2;202;input-register;READ_ONLY;0;65535;Firmware byte 5-6;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.3;203;input-register;READ_ONLY;0;65535;Firmware byte 7-8;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.4;204;input-register;READ_ONLY;0;65535;Firmware byte 9-10;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.5;205;input-register;READ_ONLY;0;65535;Firmware byte 11-12;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.6;206;input-register;READ_ONLY;0;65535;Firmware byte 13-14;uint16_t;;1;1;#*;;128;
+SYS.FIRMWARE.7;207;input-register;READ_ONLY;0;65535;Firmware byte 15-16;uint16_t;;1;1;#*;;128;

@@ -111,6 +111,13 @@ type Mutation {
 	createDeviceType(input: CreateDeviceTypeInput!): DeviceType!
 	exportDeviceType(id: ID!): String!
 	importDeviceType(data: String!): DeviceType!
+	"""
+	Import a Varmeco semicolon-separated CSV (e.g. `vfnova.csv`,
+	`exm_compact.csv`) as a fresh device type. Per-row parse errors
+	surface as warnings appended to the type's description so the
+	user can see what was skipped.
+	"""
+	importVarmecoCsv(name: String!, description: String, data: String!): DeviceType!
 	deleteDeviceType(id: ID!): Boolean!
 	renameDeviceType(id: ID!, name: String!, description: String): DeviceType!
 	updateBehavior(deviceTypeId: ID!, input: BehaviorInput!): Behavior!
