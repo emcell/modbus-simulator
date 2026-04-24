@@ -1,0 +1,273 @@
+type Behavior {
+	disabledFunctionCodes: [Int!]!
+	maxRegistersPerRequest: Int
+	missingFullBlock: GqlMissingBehavior!
+	missingPartialBlock: GqlMissingBehavior!
+	responseDelayMs: Int!
+}
+
+input BehaviorInput {
+	disabledFunctionCodes: [Int!]!
+	maxRegistersPerRequest: Int
+	missingFullBlock: GqlMissingBehavior!
+	missingPartialBlock: GqlMissingBehavior!
+	responseDelayMs: Int!
+}
+
+input BehaviorOverridesInput {
+	responseDelayMs: Int
+	maxRegistersPerRequest: Int
+	clearMaxRegisters: Boolean
+	disabledFunctionCodes: [Int!]
+	missingFullBlock: GqlMissingBehavior
+	missingPartialBlock: GqlMissingBehavior
+}
+
+input CreateDeviceInput {
+	name: String!
+	slaveId: Int!
+	deviceTypeId: ID!
+}
+
+input CreateDeviceTypeInput {
+	name: String!
+	description: String
+}
+
+type DecodedField {
+	registerName: String!
+	address: Int!
+	dataType: String!
+	value: String!
+}
+
+type Device {
+	id: ID!
+	name: String!
+	slaveId: Int!
+	deviceTypeId: ID!
+	hasBehaviorOverrides: Boolean!
+	registerValues: [RegisterValueEntry!]!
+	effectiveBehavior: Behavior!
+	"""
+	Epoch ms of the last read handled for this device, or null.
+	"""
+	lastReadAtMs: String
+	"""
+	Epoch ms of the last write handled for this device, or null.
+	"""
+	lastWriteAtMs: String
+	"""
+	Per-register read/write timestamps (only registers that have seen
+	at least one access appear here).
+	"""
+	registerActivity: [RegisterActivityEntry!]!
+}
+
+type DeviceType {
+	id: ID!
+	name: String!
+	description: String!
+	registers: [RegisterPoint!]!
+	behavior: Behavior!
+}
+
+enum GqlDataType {
+	U16
+	I16
+	U32
+	I32
+	U64
+	I64
+	F16
+	F32
+	F64
+	STRING
+}
+
+enum GqlEncoding {
+	BIG_ENDIAN
+	LITTLE_ENDIAN
+	BIG_ENDIAN_WORD_SWAP
+	LITTLE_ENDIAN_WORD_SWAP
+}
+
+enum GqlMissingBehavior {
+	ILLEGAL_DATA_ADDRESS
+	ILLEGAL_FUNCTION
+	SLAVE_DEVICE_FAILURE
+	TIMEOUT
+	ZERO_FILL
+}
+
+enum GqlRegisterKind {
+	HOLDING
+	INPUT
+	COIL
+	DISCRETE
+}
+
+type Mutation {
+	createDeviceType(input: CreateDeviceTypeInput!): DeviceType!
+	exportDeviceType(id: ID!): String!
+	importDeviceType(data: String!): DeviceType!
+	deleteDeviceType(id: ID!): Boolean!
+	renameDeviceType(id: ID!, name: String!, description: String): DeviceType!
+	updateBehavior(deviceTypeId: ID!, input: BehaviorInput!): Behavior!
+	upsertRegister(deviceTypeId: ID!, input: RegisterInput!): RegisterPoint!
+	deleteRegister(id: ID!): Boolean!
+	createDevice(input: CreateDeviceInput!): Device!
+	deleteDevice(id: ID!): Boolean!
+	setRegisterValue(deviceId: ID!, registerId: ID!, value: ValueInput!): RegisterValueEntry!
+	setBehaviorOverrides(deviceId: ID!, input: BehaviorOverridesInput): Boolean!
+	createContext(name: String!): SimContext!
+	switchContext(id: ID!): Boolean!
+	deleteContext(id: ID!): Boolean!
+	configureTcp(enabled: Boolean!, bind: String!, port: Int!): Boolean!
+	configureRtu(enabled: Boolean!, device: String!, baudRate: Int!, parity: String!, dataBits: Int!, stopBits: Int!, virtualSerialId: ID): Boolean!
+	createVirtualSerial(symlinkPath: String): VirtualSerial!
+	removeVirtualSerial(id: ID!): Boolean!
+	exportContext(id: ID!): String!
+	importContext(data: String!): SimContext!
+}
+
+type Query {
+	deviceTypes: [DeviceType!]!
+	deviceType(id: ID!): DeviceType
+	devices: [Device!]!
+	contexts: [SimContext!]!
+	activeContext: SimContext
+	transportStatus: TransportStatus!
+	virtualSerials: [VirtualSerial!]!
+}
+
+type RegisterActivityEntry {
+	registerId: ID!
+	lastReadAtMs: String
+	lastWriteAtMs: String
+}
+
+input RegisterInput {
+	id: ID
+	kind: GqlRegisterKind!
+	address: Int!
+	name: String!
+	description: String
+	dataType: GqlDataType!
+	encoding: GqlEncoding!
+	byteLength: Int
+	defaultValue: ValueInput!
+}
+
+type RegisterPoint {
+	id: ID!
+	kind: GqlRegisterKind!
+	address: Int!
+	name: String!
+	description: String!
+	dataType: GqlDataType!
+	encoding: GqlEncoding!
+	byteLength: Int
+	defaultValue: ScalarValue!
+	wordCount: Int!
+}
+
+type RegisterValueEntry {
+	registerId: ID!
+	value: ScalarValue!
+}
+
+type RtuTransport {
+	enabled: Boolean!
+	device: String!
+	baudRate: Int!
+	parity: String!
+	dataBits: Int!
+	stopBits: Int!
+	virtualSerialId: ID
+}
+
+type ScalarValue {
+	"""
+	One of U16,I16,U32,I32,U64,I64,F16,F32,F64,STRING,BOOL
+	"""
+	dataType: String!
+	"""
+	Stringified numeric / string / boolean value.
+	"""
+	value: String!
+}
+
+type SimContext {
+	id: ID!
+	name: String!
+	active: Boolean!
+	devices: [Device!]!
+	tcp: TcpTransport!
+	rtu: RtuTransport!
+}
+
+type SubscriptionRoot {
+	traffic: TrafficEvent!
+	worldChanged: Boolean!
+}
+
+type TcpTransport {
+	enabled: Boolean!
+	bind: String!
+	port: Int!
+}
+
+type TrafficEvent {
+	direction: String!
+	transport: String!
+	slaveId: Int!
+	functionCode: Int!
+	bytesHex: String!
+	timestampMs: String!
+	summary: String!
+	decoded: [DecodedField!]!
+}
+
+enum TransportState {
+	DISABLED
+	RUNNING
+	ERROR
+}
+
+type TransportStatus {
+	tcp: TransportStatusView!
+	rtu: TransportStatusView!
+}
+
+type TransportStatusView {
+	state: TransportState!
+	description: String!
+	error: String
+}
+
+input ValueInput {
+	dataType: String!
+	value: String!
+}
+
+type VirtualSerial {
+	id: ID!
+	slavePath: String!
+	symlinkPath: String
+	inUse: Boolean!
+}
+
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: SubscriptionRoot
+}

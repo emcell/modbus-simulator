@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "schema": "node scripts/gen-schema.js",
-    "generate": "npm run schema && gql.tada generate-output",
-    "dev": "npm run generate && vite",
-    "build": "npm run generate && tsc -b && vite build",
+    "schema:regen": "node scripts/gen-schema.js && gql.tada generate-output",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
     "check": "tsc -b",
     "preview": "vite preview",
     "e2e": "playwright test"
