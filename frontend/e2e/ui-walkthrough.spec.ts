@@ -31,6 +31,9 @@ test.beforeAll(async () => {
       ...process.env,
       MODSIM_CONFIG_DIR: tmpRoot,
       MODSIM_HTTP_PORT: String(PORT),
+      // Disable the startup browser-open: we're testing headlessly and
+      // definitely don't want Safari/Chrome tabs opening on every run.
+      MODSIM_OPEN_BROWSER: "false",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

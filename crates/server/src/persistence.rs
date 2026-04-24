@@ -33,7 +33,11 @@ fn default_http_port() -> u16 {
 }
 
 fn default_http_bind() -> String {
-    "127.0.0.1".to_string()
+    // Listen on every local interface so the UI is reachable from other
+    // machines on the LAN / VM bridge out of the box. Override with the
+    // MODSIM_HTTP_BIND env var or by editing settings.json if you want
+    // loopback-only.
+    "0.0.0.0".to_string()
 }
 
 impl Default for AppSettings {

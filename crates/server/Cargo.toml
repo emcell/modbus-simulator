@@ -30,6 +30,8 @@ thiserror = "2"
 anyhow = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+open = "5"
+dotenvy = "0.15"
 uuid = { version = "1", features = ["v4", "serde"] }
 directories = "5"
 rust-embed = { version = "8", features = ["include-exclude", "interpolate-folder-path"] }

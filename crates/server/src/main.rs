@@ -10,6 +10,10 @@ use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Load .env from CWD (walks up the tree). Silent when not present —
+    // release users don't need one; developers copy `.env.example` once.
+    let _ = dotenvy::dotenv();
+
     tracing_subscriber::fmt()
         .with_env_filter(
             EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
@@ -61,10 +65,45 @@ async fn main() -> Result<()> {
         .unwrap_or(settings.http_port);
     let bind = std::env::var("MODSIM_HTTP_BIND").unwrap_or_else(|_| settings.http_bind.clone());
     let addr: SocketAddr = format!("{bind}:{port}").parse()?;
-    tracing::info!("HTTP listening on http://{addr}");
     let listener = tokio::net::TcpListener::bind(addr).await?;
+    tracing::info!("HTTP listening on http://{addr}");
+
+    maybe_open_browser(&bind, port);
+
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+/// Spawn the default browser pointing at the UI, unless
+/// `MODSIM_OPEN_BROWSER` is set to a falsy value. Silent on failure —
+/// the URL is already in the log line above so the user can still click
+/// it.
+fn maybe_open_browser(bind: &str, port: u16) {
+    let raw = std::env::var("MODSIM_OPEN_BROWSER").unwrap_or_default();
+    let enabled = match raw.trim().to_ascii_lowercase().as_str() {
+        "" | "1" | "true" | "yes" | "on" => true,
+        "0" | "false" | "no" | "off" => false,
+        other => {
+            tracing::warn!(
+                "unrecognized MODSIM_OPEN_BROWSER value '{other}', using default (enabled)"
+            );
+            true
+        }
+    };
+    if !enabled {
+        tracing::info!("Browser auto-open disabled (MODSIM_OPEN_BROWSER={raw})");
+        return;
+    }
+    // Browsers can't navigate to a wildcard bind; point at loopback instead.
+    let host = match bind {
+        "0.0.0.0" | "::" | "[::]" => "127.0.0.1",
+        other => other,
+    };
+    let url = format!("http://{host}:{port}/");
+    tracing::info!("Opening {url} in browser");
+    if let Err(e) = open::that_detached(&url) {
+        tracing::warn!("failed to open browser for {url}: {e}");
+    }
 }
 
 // keep Arc import used
