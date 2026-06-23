@@ -134,6 +134,12 @@ type Mutation {
 	configureRtu(enabled: Boolean!, device: String!, baudRate: Int!, parity: String!, dataBits: Int!, stopBits: Int!, virtualSerialId: ID): Boolean!
 	createVirtualSerial(symlinkPath: String): VirtualSerial!
 	removeVirtualSerial(id: ID!): Boolean!
+	"""
+	Tear down and rebuild a virtual serial's PTY pair, re-pointing its
+	symlink and re-binding RTU if it was in use. Recovers a dead PTY
+	(dangling symlink) without restarting the simulator.
+	"""
+	recreateVirtualSerial(id: ID!): Boolean!
 	exportContext(id: ID!): String!
 	importContext(data: String!): SimContext!
 }

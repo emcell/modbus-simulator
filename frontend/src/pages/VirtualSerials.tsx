@@ -1,6 +1,10 @@
 import { useCallback, useState } from "react";
 import { request } from "../graphql";
-import { CreateVirtualSerialMutation, RemoveVirtualSerialMutation } from "../queries";
+import {
+  CreateVirtualSerialMutation,
+  RecreateVirtualSerialMutation,
+  RemoveVirtualSerialMutation,
+} from "../queries";
 import type { WorldSnapshot } from "../App";
 
 export function VirtualSerialsPage({
@@ -27,6 +31,14 @@ export function VirtualSerialsPage({
     [onRefresh],
   );
 
+  const recreate = useCallback(
+    async (id: string) => {
+      await request(RecreateVirtualSerialMutation, { id });
+      await onRefresh();
+    },
+    [onRefresh],
+  );
+
   return (
     <div className="stack">
       <div className="panel">
@@ -36,6 +48,13 @@ export function VirtualSerialsPage({
           the master fd internally and exposes the slave device path (optionally aliased via a
           symlink you choose). Point your test app at the slave path, and configure the simulator's
           RTU transport to talk to the same path.
+        </p>
+        <p className="muted">
+          The slave device is created with mode <code>0666</code> so any user can open it — no root
+          is required, even when the simulator itself runs as root. Run as root only if your symlink
+          must live in a protected directory. If a device dies or its symlink is left dangling, use{" "}
+          <strong>Recreate</strong> below to rebuild the pair and re-point the symlink without
+          restarting the simulator.
         </p>
         <div className="row">
           <input
@@ -83,9 +102,17 @@ export function VirtualSerialsPage({
                   )}
                 </td>
                 <td className="narrow">
-                  <button className="danger" onClick={() => void remove(v.id)}>
-                    Remove
-                  </button>
+                  <div className="row">
+                    <button
+                      onClick={() => void recreate(v.id)}
+                      title="Tear down and rebuild the PTY pair, re-pointing the symlink. Use this if the device died or the symlink is dangling."
+                    >
+                      Recreate
+                    </button>
+                    <button className="danger" onClick={() => void remove(v.id)}>
+                      Remove
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

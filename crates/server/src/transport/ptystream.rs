@@ -82,6 +82,17 @@ impl AsyncRead for PtyStream {
                     guard.clear_ready();
                     continue;
                 }
+                // EIO on a PTY master means the slave side is currently not
+                // open — i.e. the consumer disconnected. That is transient,
+                // not fatal: report it as a 0-byte read so the serve loop
+                // idles (sleeps 10ms and retries) and the master fd — and thus
+                // the PTY pair and the user's symlink — stays alive for the
+                // consumer to reopen. Without this the task exits, drops the
+                // master fd, and destroys the PTY.
+                if e.raw_os_error() == Some(libc::EIO) {
+                    guard.clear_ready();
+                    return Poll::Ready(Ok(()));
+                }
                 return Poll::Ready(Err(e));
             }
             let n = n as usize;

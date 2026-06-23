@@ -183,3 +183,9 @@ export const RemoveVirtualSerialMutation = graphql(`
     removeVirtualSerial(id: $id)
   }
 `);
+
+export const RecreateVirtualSerialMutation = graphql(`
+  mutation RecreateVirtualSerial($id: ID!) {
+    recreateVirtualSerial(id: $id)
+  }
+`);

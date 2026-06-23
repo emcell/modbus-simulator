@@ -137,6 +137,14 @@ impl AppState {
         self.supervisor.reconfigure(self).await;
     }
 
+    /// Rebuild the PTY pair for a virtual serial (re-pointing its symlink and
+    /// re-binding RTU if it was in use). Lets the user recover a dead PTY from
+    /// the UI without restarting the process.
+    #[cfg(unix)]
+    pub async fn recreate_virtual_serial(self: &Arc<Self>, id: &str) -> anyhow::Result<()> {
+        self.supervisor.recreate_virtual_serial(self, id).await
+    }
+
     pub fn mark_device_read(&self, id: DeviceId, timestamp_ms: u128) {
         self.activity.write().entry(id).or_default().last_read_at_ms = Some(timestamp_ms);
     }

@@ -117,6 +117,17 @@ impl PtyRegistry {
                 .into_owned();
             PathBuf::from(path)
         };
+
+        // Widen the slave so unprivileged consumer apps can open it even when
+        // the simulator runs as root. `grantpt()` (inside `openpty`) leaves it
+        // 0620 owned by the running user; the owner is always allowed to chmod,
+        // root or not. Non-fatal on failure — log and carry on.
+        if let Err(e) = nix::sys::stat::fchmod(
+            slave_fd.as_raw_fd(),
+            nix::sys::stat::Mode::from_bits_truncate(0o666),
+        ) {
+            tracing::warn!("could not chmod {} to 0666: {e}", slave_path.display());
+        }
         drop(slave_fd);
 
         if let Some(link) = &symlink {
@@ -190,6 +201,19 @@ mod tests {
         assert_eq!(reg.list().len(), 1);
         assert!(reg.remove(&info.id));
         assert_eq!(reg.list().len(), 0);
+    }
+
+    #[test]
+    fn create_sets_slave_mode_0666() {
+        use std::os::unix::fs::PermissionsExt;
+        let reg = PtyRegistry::new();
+        let info = reg.create(None).expect("openpty");
+        let mode = std::fs::metadata(&info.slave_path)
+            .expect("stat slave")
+            .permissions()
+            .mode();
+        assert_eq!(mode & 0o777, 0o666, "slave should be world rw");
+        reg.remove(&info.id);
     }
 
     #[test]

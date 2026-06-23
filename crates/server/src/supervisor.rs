@@ -99,6 +99,37 @@ impl TransportSupervisor {
         *self.status.lock() = TransportStatus::default();
     }
 
+    /// Tear down and rebuild the PTY pair for `id`, re-pointing its symlink
+    /// and re-binding RTU if it was using this virtual serial. Lets the user
+    /// recover a dead PTY (dangling symlink) without restarting the process.
+    #[cfg(unix)]
+    pub async fn recreate_virtual_serial(
+        &self,
+        state: &Arc<AppState>,
+        id: &str,
+    ) -> anyhow::Result<()> {
+        // If the RTU task currently owns this vs, stop it first so the master
+        // fd is released before we rebuild the pair.
+        let was_bound = {
+            let mut g = self.rtu.lock();
+            if g.as_ref().and_then(|r| r.vs_id.as_deref()) == Some(id) {
+                g.take().unwrap().handle.abort();
+                self.status.lock().rtu = TransportState::Disabled;
+                true
+            } else {
+                false
+            }
+        };
+        rebuild_pty(state, id)?;
+        // If RTU had been bound to it, re-apply so it re-takes the fresh
+        // master (the rtu slot is now empty, so the idempotency check in
+        // `reconfigure_rtu` won't short-circuit).
+        if was_bound {
+            self.reconfigure(state).await;
+        }
+        Ok(())
+    }
+
     /// Apply the current active context's transport settings. Idempotent:
     /// if the config matches what's already running, the listener task
     /// keeps running untouched (crucial for RTU + virtual-serial, where a
@@ -285,25 +316,30 @@ impl TransportSupervisor {
     }
 }
 
-/// After an RTU task has been aborted, the master fd it owned was dropped
-/// with the task — leaving the registry entry with `master_fd: None` and
-/// the PTY pair destroyed at the kernel level. This replaces the entry
-/// with a fresh PTY pair reusing the same id + symlink so the user's
-/// saved RTU config (and their test app which opened the symlink) stays
-/// valid across toggles and restarts.
+/// Replace the registry entry for `id` with a fresh PTY pair reusing the same
+/// id + symlink (re-pointing the symlink at the new slave and re-applying the
+/// 0666 mode). Recovers a PTY whose master fd was dropped — e.g. after an RTU
+/// task abort, or a genuinely dead PTY left with a dangling symlink.
 #[cfg(unix)]
-fn recycle_pty(state: &Arc<AppState>, id: &str) {
+fn rebuild_pty(state: &Arc<AppState>, id: &str) -> anyhow::Result<()> {
     let Some(info) = state.ptys.get(id) else {
-        return;
+        anyhow::bail!("virtual serial '{id}' not found");
     };
     let symlink = info.symlink_path.clone();
     state.ptys.remove(id);
-    if let Err(e) = state.ptys.create_with_id(id.to_string(), symlink) {
-        tracing::warn!("failed to recycle virtual serial {id}: {e}");
-    }
+    state.ptys.create_with_id(id.to_string(), symlink)?;
     // Persist the new state (in case symlink paths shifted).
-    if let Err(e) = state.save_virtual_serials() {
-        tracing::warn!("failed to persist virtual serials: {e}");
+    state.save_virtual_serials()?;
+    Ok(())
+}
+
+/// Fire-and-forget wrapper around [`rebuild_pty`] for the reconfigure/stop
+/// paths, where the user's saved RTU config (and their test app which opened
+/// the symlink) must stay valid across toggles and restarts.
+#[cfg(unix)]
+fn recycle_pty(state: &Arc<AppState>, id: &str) {
+    if let Err(e) = rebuild_pty(state, id) {
+        tracing::warn!("failed to recycle virtual serial {id}: {e}");
     }
 }
 

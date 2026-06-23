@@ -1252,6 +1252,29 @@ impl Mutation {
         Ok(removed)
     }
 
+    /// Tear down and rebuild a virtual serial's PTY pair, re-pointing its
+    /// symlink and re-binding RTU if it was in use. Recovers a dead PTY
+    /// (dangling symlink) without restarting the simulator.
+    async fn recreate_virtual_serial(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
+        #[cfg(unix)]
+        {
+            let state = ctx.data_unchecked::<Arc<AppState>>();
+            state
+                .recreate_virtual_serial(&id.0)
+                .await
+                .map_err(|e| async_graphql::Error::new(e.to_string()))?;
+            state.notify(crate::state::WorldEvent::WorldChanged);
+            Ok(true)
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (ctx, id);
+            Err(async_graphql::Error::new(
+                "virtual PTYs are not supported on this platform",
+            ))
+        }
+    }
+
     async fn export_context(&self, ctx: &Context<'_>, id: ID) -> Result<String> {
         let state = ctx.data_unchecked::<Arc<AppState>>();
         let cid = ContextId::from_str(&id.0)?;
