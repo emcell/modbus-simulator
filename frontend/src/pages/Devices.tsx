@@ -10,6 +10,12 @@ import { Modal } from "../components/Modal";
 import { CopyButton } from "../components/CopyButton";
 import { buildExamples } from "../mbpollExamples";
 
+/** Read the device + search selection parked in the URL query string. */
+function readUrlState(): { device: string | null; search: string } {
+  const params = new URLSearchParams(window.location.search);
+  return { device: params.get("device"), search: params.get("q") ?? "" };
+}
+
 export function DevicesPage({
   world,
   onRefresh,
@@ -18,8 +24,29 @@ export function DevicesPage({
   onRefresh: () => Promise<void>;
 }) {
   const active = world.activeContext;
-  const [selectedId, setSelectedId] = useState<string | null>(active?.devices[0]?.id ?? null);
+  // Restore the selected device + register search from the URL so a reload
+  // lands the user back where they were. Lazy initializers so the URL is read
+  // only once, on mount.
+  const [selectedId, setSelectedId] = useState<string | null>(
+    () => readUrlState().device ?? active?.devices[0]?.id ?? null,
+  );
+  const [search, setSearch] = useState(() => readUrlState().search);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Park selection + search in the URL (replaceState — don't spam history).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (selectedId) params.set("device", selectedId);
+    else params.delete("device");
+    if (search) params.set("q", search);
+    else params.delete("q");
+    const qs = params.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`,
+    );
+  }, [selectedId, search]);
 
   const openCreateModal = useCallback(() => {
     if (world.deviceTypes.length === 0) {
@@ -120,7 +147,15 @@ export function DevicesPage({
         </table>
       </div>
 
-      {selected && <DeviceValueEditor device={selected} world={world} onRefresh={onRefresh} />}
+      {selected && (
+        <DeviceValueEditor
+          device={selected}
+          world={world}
+          onRefresh={onRefresh}
+          search={search}
+          onSearchChange={setSearch}
+        />
+      )}
     </div>
   );
 }
@@ -129,10 +164,14 @@ function DeviceValueEditor({
   device,
   world,
   onRefresh,
+  search,
+  onSearchChange,
 }: {
   device: NonNullable<WorldSnapshot["activeContext"]>["devices"][number];
   world: WorldSnapshot;
   onRefresh: () => Promise<void>;
+  search: string;
+  onSearchChange: (value: string) => void;
 }) {
   const dt = world.deviceTypes.find((t) => t.id === device.deviceTypeId);
   const ctx = world.activeContext;
@@ -148,6 +187,16 @@ function DeviceValueEditor({
   };
 
   const exampleRegister = dt.registers.find((r) => r.id === exampleRegisterId) ?? null;
+
+  // Filter the data points by the search query (name / address / kind / type /
+  // encoding / description), case-insensitive.
+  const q = search.trim().toLowerCase();
+  const registers = q
+    ? dt.registers.filter((r) =>
+        [r.name, r.description, r.kind, r.dataType, r.encoding, String(r.address)]
+          .some((field) => (field ?? "").toLowerCase().includes(q)),
+      )
+    : dt.registers;
 
   return (
     <div className="panel">
@@ -172,6 +221,21 @@ function DeviceValueEditor({
         instance; the device type's default is untouched. Click ℹ on any row for mbpoll read/write
         examples.
       </p>
+      <div className="row">
+        <input
+          className="grow"
+          type="search"
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          placeholder="Search data points by name, address, type…"
+          aria-label="Search data points"
+        />
+        {q && (
+          <span className="muted">
+            {registers.length} / {dt.registers.length}
+          </span>
+        )}
+      </div>
       <table>
         <thead>
           <tr>
@@ -187,7 +251,7 @@ function DeviceValueEditor({
           </tr>
         </thead>
         <tbody>
-          {dt.registers.map((r) => {
+          {registers.map((r) => {
             const current = valueFor(r.id);
             const activity = device.registerActivity.find(
               (a) => a.registerId === r.id,
@@ -207,6 +271,13 @@ function DeviceValueEditor({
               />
             );
           })}
+          {registers.length === 0 && (
+            <tr>
+              <td colSpan={9} className="muted">
+                No data points match “{search}”.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
@@ -500,6 +571,22 @@ function ValueRow({
   const [value, setValue] = useState(current);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Reflect external value changes in the input. When a Modbus master writes
+  // this register, the periodic refresh delivers a new `current` prop — but
+  // `useState(current)` only seeds the input on mount, so without this the
+  // field would keep showing the stale value while the activity dot pulses.
+  // Don't clobber a value the user is in the middle of typing.
+  const lastCurrent = useRef(current);
+  useEffect(() => {
+    if (current !== lastCurrent.current) {
+      lastCurrent.current = current;
+      if (document.activeElement !== inputRef.current) {
+        setValue(current);
+      }
+    }
+  }, [current]);
 
   const save = useCallback(async () => {
     setBusy(true);
@@ -528,7 +615,7 @@ function ValueRow({
       <td>{register.encoding}</td>
       <td>
         <div className="row">
-          <input value={value} onChange={(e) => setValue(e.target.value)} />
+          <input ref={inputRef} value={value} onChange={(e) => setValue(e.target.value)} />
           <button disabled={busy || value === current} onClick={() => void save()}>
             Save
           </button>
