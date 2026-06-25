@@ -774,18 +774,22 @@ function ActivityCell({
   }, []);
 
   if (!timestampMs) {
-    return <span className="muted">—</span>;
+    return (
+      <span className="activity-cell muted">
+        <span className="activity-age">—</span>
+      </span>
+    );
   }
   const ms = Number(timestampMs);
   const ageMs = Date.now() - ms;
   return (
-    <span title={new Date(ms).toLocaleTimeString()}>
+    <span className="activity-cell" title={new Date(ms).toLocaleTimeString()}>
       <span
         key={pulseSeq}
         className={`pulse-dot ${kind}`}
         aria-label={`${kind} activity`}
       />
-      {formatAge(ageMs)}
+      <span className="activity-age">{formatAge(ageMs)}</span>
     </span>
   );
 }
