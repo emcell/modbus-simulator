@@ -615,7 +615,21 @@ function ValueRow({
       <td>{register.encoding}</td>
       <td>
         <div className="row">
-          <input ref={inputRef} value={value} onChange={(e) => setValue(e.target.value)} />
+          <input
+            ref={inputRef}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (value !== current && !busy) void save();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setValue(current);
+              }
+            }}
+            title="Enter to save · Esc to restore"
+          />
           <button disabled={busy || value === current} onClick={() => void save()}>
             Save
           </button>
