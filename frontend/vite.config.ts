@@ -2,6 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
+  // Relative asset URLs so one build can be served from any subpath
+  // behind a reverse proxy (`/`, `/modsim/`, `/tools/modbus/`, …)
+  // without rebuilding. Vite falls back to "/" for the dev server, so
+  // `npm run dev` is unaffected. Everything the app requests at runtime
+  // is resolved against the document URL — see src/config.ts.
+  base: "./",
   plugins: [react()],
   server: {
     port: 5173,

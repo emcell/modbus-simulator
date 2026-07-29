@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use modsim_server::graphql::build_schema;
-use modsim_server::http::router;
+use modsim_server::http::{normalize_base_path, router_with_base};
 use modsim_server::persistence::Store;
 use modsim_server::state::AppState;
 use tracing_subscriber::EnvFilter;
@@ -56,7 +56,14 @@ async fn main() -> Result<()> {
     state.supervisor.reconfigure(&state).await;
 
     let schema = build_schema(state.clone());
-    let app = router(state.clone(), schema);
+
+    // Only proxies that forward the subpath verbatim need this; when the
+    // proxy strips its prefix the UI already copes on its own because it
+    // resolves every URL relative to the document.
+    let base_path =
+        std::env::var("MODSIM_BASE_PATH").unwrap_or_else(|_| settings.base_path.clone());
+    let base_path = normalize_base_path(&base_path).unwrap_or_default();
+    let app = router_with_base(state.clone(), schema, &base_path);
 
     // Env var override for tests / ad-hoc runs.
     let port = std::env::var("MODSIM_HTTP_PORT")
@@ -66,9 +73,9 @@ async fn main() -> Result<()> {
     let bind = std::env::var("MODSIM_HTTP_BIND").unwrap_or_else(|_| settings.http_bind.clone());
     let addr: SocketAddr = format!("{bind}:{port}").parse()?;
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    tracing::info!("HTTP listening on http://{addr}");
+    tracing::info!("HTTP listening on http://{addr}{base_path}/");
 
-    maybe_open_browser(&bind, port);
+    maybe_open_browser(&bind, port, &base_path);
 
     axum::serve(listener, app).await?;
     Ok(())
@@ -78,7 +85,7 @@ async fn main() -> Result<()> {
 /// `MODSIM_OPEN_BROWSER` is set to a falsy value. Silent on failure —
 /// the URL is already in the log line above so the user can still click
 /// it.
-fn maybe_open_browser(bind: &str, port: u16) {
+fn maybe_open_browser(bind: &str, port: u16, base_path: &str) {
     let raw = std::env::var("MODSIM_OPEN_BROWSER").unwrap_or_default();
     let enabled = match raw.trim().to_ascii_lowercase().as_str() {
         "" | "1" | "true" | "yes" | "on" => true,
@@ -99,7 +106,7 @@ fn maybe_open_browser(bind: &str, port: u16) {
         "0.0.0.0" | "::" | "[::]" => "127.0.0.1",
         other => other,
     };
-    let url = format!("http://{host}:{port}/");
+    let url = format!("http://{host}:{port}{base_path}/");
     tracing::info!("Opening {url} in browser");
     if let Err(e) = open::that_detached(&url) {
         tracing::warn!("failed to open browser for {url}: {e}");

@@ -26,6 +26,11 @@ pub struct AppSettings {
     pub http_port: u16,
     #[serde(default = "default_http_bind")]
     pub http_bind: String,
+    /// Subpath the HTTP server is published under, e.g. `/modsim`. Only
+    /// needed behind a reverse proxy that forwards the prefix instead of
+    /// stripping it; empty means "serve at the root".
+    #[serde(default)]
+    pub base_path: String,
 }
 
 fn default_http_port() -> u16 {
@@ -45,6 +50,7 @@ impl Default for AppSettings {
         Self {
             http_port: default_http_port(),
             http_bind: default_http_bind(),
+            base_path: String::new(),
         }
     }
 }

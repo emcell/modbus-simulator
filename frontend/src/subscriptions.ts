@@ -1,5 +1,7 @@
 //! Minimal graphql-ws client for subscriptions (protocol: "graphql-transport-ws").
 
+import { wsUrl } from "./config";
+
 export type ConnectionStatus =
   | { state: "connecting" }
   | { state: "open" }
@@ -21,9 +23,9 @@ let idCounter = 0;
 
 export function subscribe<TData>(opts: SubscribeOptions<TData>): SubscriptionHandle {
   const id = String(++idCounter);
-  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const url = `${proto}//${window.location.host}/graphql/ws`;
-  const ws = new WebSocket(url, "graphql-transport-ws");
+  // Relative to the document so a proxy subpath (and its https → wss
+  // upgrade) is picked up automatically.
+  const ws = new WebSocket(wsUrl("graphql/ws"), "graphql-transport-ws");
   let closed = false;
   opts.onStatus?.({ state: "connecting" });
 

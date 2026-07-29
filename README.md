@@ -211,6 +211,83 @@ Import/Export: Ein exportierter Kontext enthält die benötigten Gerätetypen ei
 
 `<config-dir>` folgt plattformkonvention (XDG unter Linux, `%APPDATA%` unter Windows).
 
+## Betrieb hinter einem Reverse Proxy (Subpath)
+
+Das UI baut sämtliche URLs (Assets, GraphQL, WebSocket) *relativ* zum
+Dokument, aus dem es geladen wurde. Ein Build läuft dadurch unverändert
+unter `/`, `/modsim/` oder `/tools/modbus/` — ohne Rebuild und ohne
+Konfiguration.
+
+Wichtig ist nur der **abschließende Slash** im Proxy-Pfad: ohne ihn löst
+der Browser relative URLs gegen das übergeordnete Verzeichnis auf.
+
+### Variante A — Proxy entfernt das Präfix (empfohlen)
+
+Der Simulator läuft weiterhin auf `/`, nur der Browser sieht den
+Subpath. Hier ist am Simulator **nichts** einzustellen:
+
+```nginx
+# einmal auf http-Ebene, für den WebSocket-Upgrade
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+location = /modsim { return 301 /modsim/; }
+
+location /modsim/ {
+    proxy_pass http://127.0.0.1:8080/;   # der Slash am Ende entfernt das Präfix
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade    $http_upgrade;   # für /graphql/ws
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host       $host;
+    proxy_set_header X-Forwarded-Proto  $scheme;   # nur für /playground nötig
+    proxy_set_header X-Forwarded-Prefix /modsim;   #   (das UI selbst braucht sie nicht)
+}
+```
+
+Caddy:
+
+```caddyfile
+handle_path /modsim/* {
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
+### Variante B — Proxy reicht das Präfix durch
+
+Wenn der Proxy den Pfad unverändert weitergibt (`proxy_pass
+http://127.0.0.1:8080;`, Traefik ohne `StripPrefix`), muss der Simulator
+selbst unterhalb des Präfixes lauschen:
+
+```sh
+MODSIM_BASE_PATH=/modsim modsim
+```
+
+bzw. dauerhaft in `settings.json`:
+
+```json
+{ "http_port": 8080, "http_bind": "0.0.0.0", "base_path": "/modsim" }
+```
+
+Damit liegen UI und API unter `/modsim/…`; ein Aufruf von `/modsim`
+(ohne Slash) wird auf `/modsim/` umgeleitet, `/` liefert nichts mehr.
+
+### WebSocket
+
+Die Traffic-Ansicht nutzt `…/graphql/ws`. Der Proxy muss den
+Upgrade-Header durchreichen (siehe Snippets oben), sonst bleibt die
+Ansicht leer — der Rest des UIs funktioniert trotzdem. `https://` wird
+automatisch zu `wss://`.
+
+### GraphQL Playground
+
+`…/playground` braucht absolute URLs und kann den Subpath deshalb nicht
+selbst erraten. In Variante A liefern `X-Forwarded-Proto`,
+`X-Forwarded-Host` und `X-Forwarded-Prefix` die fehlende Information; in
+Variante B stimmt der Pfad ohnehin. Das UI selbst funktioniert in beiden
+Fällen auch ohne diese Header.
+
 ## Bauen & Entwickeln
 
 ```sh

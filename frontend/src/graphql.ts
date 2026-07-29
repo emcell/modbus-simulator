@@ -1,5 +1,6 @@
 import { initGraphQLTada } from "gql.tada";
 import { print, type DocumentNode } from "graphql";
+import { httpUrl } from "./config";
 import type { introspection } from "./graphql-env.d.ts";
 
 export const graphql = initGraphQLTada<{
@@ -9,7 +10,9 @@ export const graphql = initGraphQLTada<{
   };
 }>();
 
-const ENDPOINT = "/graphql";
+// Resolved against the document, not the origin root, so the app keeps
+// working under a reverse-proxy subpath.
+const ENDPOINT = httpUrl("graphql");
 
 export interface GqlError {
   message: string;
