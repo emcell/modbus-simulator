@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { request } from "../graphql";
 import {
   CreateContextMutation,
@@ -7,6 +7,7 @@ import {
   ImportContextMutation,
   SwitchContextMutation,
 } from "../queries";
+import { PromptModal } from "../components/PromptModal";
 import type { WorldSnapshot } from "../App";
 
 export function ContextsPage({
@@ -16,12 +17,16 @@ export function ContextsPage({
   world: WorldSnapshot;
   onRefresh: () => Promise<void>;
 }) {
-  const createContext = useCallback(async () => {
-    const name = window.prompt("Context name?");
-    if (!name) return;
-    await request(CreateContextMutation, { name });
-    await onRefresh();
-  }, [onRefresh]);
+  const [newOpen, setNewOpen] = useState(false);
+
+  const createContext = useCallback(
+    async (name: string) => {
+      await request(CreateContextMutation, { name });
+      setNewOpen(false);
+      await onRefresh();
+    },
+    [onRefresh],
+  );
 
   const switchTo = useCallback(
     async (id: string) => {
@@ -68,10 +73,18 @@ export function ContextsPage({
 
   return (
     <div className="stack">
+      <PromptModal
+        open={newOpen}
+        title="New context"
+        label="Name"
+        placeholder="e.g. lab-a"
+        onCancel={() => setNewOpen(false)}
+        onSubmit={createContext}
+      />
       <div className="panel">
         <div className="row">
           <h2 className="grow">Contexts</h2>
-          <button onClick={() => void createContext()}>+ New</button>
+          <button onClick={() => setNewOpen(true)}>+ New</button>
           <button onClick={() => void importContext()}>Import…</button>
         </div>
         <p className="muted">

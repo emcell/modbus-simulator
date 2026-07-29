@@ -118,6 +118,16 @@ function expectDialog(answer: string | null = null) {
   dialogQueue.push(answer);
 }
 
+/** Drive the in-app "New context" modal (header `+ Context` button). */
+async function createContext(page: Page, name: string) {
+  await page.getByRole("button", { name: "+ Context" }).click();
+  const modal = page.getByRole("dialog", { name: "New context" });
+  await expect(modal).toBeVisible();
+  await modal.locator("#prompt-modal-input").fill(name);
+  await modal.getByRole("button", { name: "Create" }).click();
+  await expect(modal).toBeHidden();
+}
+
 test("full UI walkthrough without browser errors", async ({ page }) => {
   attachListeners(page);
 
@@ -127,12 +137,11 @@ test("full UI walkthrough without browser errors", async ({ page }) => {
   await expect(page.locator("header.app h1")).toHaveText(/Modbus Simulator/);
 
   // --- Create two contexts via the header `+ Context` button ------------
-  expectDialog("lab-a");
-  await page.getByRole("button", { name: "+ Context" }).click();
+  // In-app modal, not a native prompt — see components/PromptModal.tsx.
+  await createContext(page, "lab-a");
   await expect(page.locator("header.app select")).toHaveValue(/.+/);
 
-  expectDialog("lab-b");
-  await page.getByRole("button", { name: "+ Context" }).click();
+  await createContext(page, "lab-b");
 
   // --- Contexts tab: switch, export, import, delete ---------------------
   await page.getByRole("button", { name: "Contexts", exact: true }).click();

@@ -12,6 +12,7 @@ import { VirtualSerialsPage } from "./pages/VirtualSerials";
 import { TrafficPage } from "./pages/Traffic";
 import { ContextsPage } from "./pages/Contexts";
 import { ConverterPage } from "./pages/Converter";
+import { PromptModal } from "./components/PromptModal";
 
 export type WorldSnapshot = Awaited<ReturnType<typeof fetchWorld>>;
 
@@ -42,6 +43,7 @@ export function App() {
   const [tab, setTab] = useState<Tab>("devices");
   const [world, setWorld] = useState<WorldSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [newContextOpen, setNewContextOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -70,12 +72,14 @@ export function App() {
     [refresh],
   );
 
-  const onCreateContext = useCallback(async () => {
-    const name = window.prompt("New context name?");
-    if (!name) return;
-    await request(CreateContextMutation, { name });
-    await refresh();
-  }, [refresh]);
+  const onCreateContext = useCallback(
+    async (name: string) => {
+      await request(CreateContextMutation, { name });
+      setNewContextOpen(false);
+      await refresh();
+    },
+    [refresh],
+  );
 
   const page = useMemo(() => {
     if (!world) return null;
@@ -113,7 +117,7 @@ export function App() {
             </option>
           ))}
         </select>
-        <button onClick={() => void onCreateContext()}>+ Context</button>
+        <button onClick={() => setNewContextOpen(true)}>+ Context</button>
         <div className="spacer" />
         <nav>
           {TABS.map((t) => (
@@ -127,6 +131,14 @@ export function App() {
           ))}
         </nav>
       </header>
+      <PromptModal
+        open={newContextOpen}
+        title="New context"
+        label="Name"
+        placeholder="e.g. lab-a"
+        onCancel={() => setNewContextOpen(false)}
+        onSubmit={onCreateContext}
+      />
       <main>
         {error && <div className="panel error">Error: {error}</div>}
         {!world && !error && <div className="panel muted">Loading…</div>}
