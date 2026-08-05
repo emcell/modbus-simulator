@@ -305,6 +305,24 @@ fn mbpoll_success(port: u16, opts: &[&str], values: &[&str]) -> String {
     stdout
 }
 
+/// Pull the hex word mbpoll printed for one register slot out of its output,
+/// e.g. `[60]:\t0x4142` -> `0x4142`. Digit case varies between builds, so the
+/// parse is case-insensitive.
+fn hex_slot(stdout: &str, idx: u32) -> u16 {
+    let prefix = format!("[{idx}]:");
+    let line = stdout
+        .lines()
+        .map(str::trim_end)
+        .find(|l| l.starts_with(&prefix))
+        .unwrap_or_else(|| panic!("no slot [{idx}] in:\n{stdout}"));
+    let raw = line[prefix.len()..].trim();
+    let digits = raw
+        .strip_prefix("0x")
+        .or_else(|| raw.strip_prefix("0X"))
+        .unwrap_or_else(|| panic!("slot [{idx}] is not hex: {line:?}"));
+    u16::from_str_radix(digits, 16).unwrap_or_else(|e| panic!("slot [{idx}] hex {digits:?}: {e}"))
+}
+
 /// Helper: assert mbpoll output has a line `[<idx>]:\t<value>` (tab-separated).
 fn assert_slot(stdout: &str, idx: u32, value: &str) {
     let ok = stdout.lines().any(|l| {
@@ -656,25 +674,20 @@ async fn string_read_round_trip_raw_words() {
         return;
     }
     let port = start_server().await;
-    // Read 4 holding regs as a string starting at address 60.
+    // Read the 4 holding regs at address 60 as hex and assemble the string
+    // here, rather than letting mbpoll do it with `-t 4:string`: that format
+    // only exists in newer mbpoll builds, and what this test is about is the
+    // words the simulator puts on the wire, not how mbpoll prints them.
     let stdout = tokio::task::spawn_blocking(move || {
-        mbpoll_success(port, &["-t", "4:string", "-r", "60", "-c", "4"], &[])
+        mbpoll_success(port, &["-t", "4:hex", "-r", "60", "-c", "4"], &[])
     })
     .await
     .unwrap();
-    // mbpoll prints one line per register with two characters each:
-    //   [60]:\tAB   [61]:\tCD   [62]:\tef   [63]:\tgh
-    // Concatenating those value columns should give back "ABCDefgh".
     let mut assembled = String::new();
-    for line in stdout.lines() {
-        let line = line.trim_end();
-        for prefix in ["[60]:", "[61]:", "[62]:", "[63]:"] {
-            if line.starts_with(prefix) {
-                if let Some(tail) = line.split_once('\t') {
-                    assembled.push_str(tail.1.trim());
-                }
-            }
-        }
+    for idx in 60..64u32 {
+        let word = hex_slot(&stdout, idx);
+        assembled.push(char::from((word >> 8) as u8));
+        assembled.push(char::from((word & 0xff) as u8));
     }
     assert_eq!(
         assembled, "ABCDefgh",

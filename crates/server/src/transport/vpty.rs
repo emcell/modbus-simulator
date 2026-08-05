@@ -44,6 +44,10 @@ struct PtyEntry {
     /// `None` once the fd has been handed to an RTU transport loop.
     #[cfg(unix)]
     master_fd: Option<std::os::fd::OwnedFd>,
+    /// The slave endpoint, held open for the lifetime of the pair and never
+    /// read from or written to. See `create_internal` for why.
+    #[cfg(unix)]
+    _slave_keepalive: std::os::fd::OwnedFd,
 }
 
 impl PtyRegistry {
@@ -100,8 +104,9 @@ impl PtyRegistry {
     ) -> anyhow::Result<VirtualPty> {
         use std::os::fd::AsRawFd;
 
-        // openpty fills master + slave fds. We own the master; the slave is
-        // closed — the user's test app will open the slave device path.
+        // openpty fills master + slave fds. We own the master; the user's test
+        // app opens the slave device path. We keep our own slave fd open too —
+        // see the keepalive note further down.
         let result = nix::pty::openpty(None, None)?;
         let master_fd = result.master;
         let slave_fd = result.slave;
@@ -128,7 +133,22 @@ impl PtyRegistry {
         ) {
             tracing::warn!("could not chmod {} to 0666: {e}", slave_path.display());
         }
-        drop(slave_fd);
+
+        // Keep our own slave fd open for the lifetime of the pair. A PTY master
+        // whose slave side is not open reports `EPOLLHUP`, and tokio records
+        // that as `Ready::READ_CLOSED` — a *final* state its `clear_ready()`
+        // deliberately refuses to clear ("closed states are excluded because
+        // they are final states"). Since `Direction::Read`'s mask includes
+        // `READ_CLOSED`, `poll_read_ready` then returns `Ready` forever, and
+        // the read loop in `ptystream.rs` spins on `EAGAIN` at full core speed
+        // the moment a consumer attaches — the master never yields to epoll
+        // again. It is invisible while nothing is attached, because the master
+        // answers `EIO` there and that path idles.
+        //
+        // Holding one end open means the pair never hangs up, so the condition
+        // cannot arise — not at registration and not when a consumer
+        // disconnects and reconnects. We never read from this fd, so it cannot
+        // take bytes away from the real consumer.
 
         if let Some(link) = &symlink {
             // `Path::exists()` follows symlinks — it returns `false` for a
@@ -153,6 +173,7 @@ impl PtyRegistry {
         self.inner.lock().push(PtyEntry {
             info: info.clone(),
             master_fd: Some(master_fd),
+            _slave_keepalive: slave_fd,
         });
         Ok(info)
     }

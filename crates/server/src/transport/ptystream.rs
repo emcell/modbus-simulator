@@ -79,6 +79,13 @@ impl AsyncRead for PtyStream {
             if n < 0 {
                 let e = io::Error::last_os_error();
                 if e.kind() == io::ErrorKind::WouldBlock {
+                    // Looping here is only safe because the PTY pair never
+                    // hangs up: `vpty.rs` holds the slave end open for the
+                    // pair's lifetime. On a hung-up master epoll reports
+                    // `EPOLLHUP`, tokio latches it as `READ_CLOSED`, and
+                    // `clear_ready()` will not clear it (closed is final) —
+                    // `poll_read_ready` would then be `Ready` forever and this
+                    // `continue` would burn a core. Do not drop that keepalive.
                     guard.clear_ready();
                     continue;
                 }
